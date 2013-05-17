@@ -1,0 +1,17 @@
+Source: initramfs-tools-ubuntu-touch
+Section: utils
+Priority: optional
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.9.4
+
+Package: initramfs-tools-ubuntu-touch
+Architecture: all
+Multi-Arch: foreign
+Depends: initramfs-tools, ${misc:Depends}
+Description: tools for mounting an Ubuntu Touch rootfs
+ This package contains the scripts to boot an Ubuntu Touch device.
+ It also ships a default fstab that uses the android device paths based
+ on partition label. By default it will mount the android userdata
+ partition, then do a bind mount of the ubuntu subdir in there to become
+ the root filesystem.

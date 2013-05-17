@@ -1,0 +1,5 @@
+initramfs-tools-ubuntu-touch (0.1) saucy; urgency=low
+
+  * Initial Release
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 17 May 2013 13:08:06 +0200

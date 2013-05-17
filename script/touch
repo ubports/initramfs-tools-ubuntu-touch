@@ -1,0 +1,35 @@
+# Local filesystem mounting			-*- shell-script -*-
+
+pre_mountroot()
+{
+	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-top"
+	run_scripts /scripts/local-top
+	[ "$quiet" != "y" ] && log_end_msg
+}
+
+mountroot()
+{
+	pre_mountroot
+
+	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-premount"
+	run_scripts /scripts/local-premount
+	[ "$quiet" != "y" ] && log_end_msg
+
+	# Mount root
+	# 
+	# Create a temporary mountpoint for the bindmount
+	mkdir -p /tmpmnt
+	# Make sure the /dev/disk/by-partlabel has been created by udev before we
+	# try to mount something from there
+	udevadm settle
+	# Mount the disk to the temporary mountpoint, then bindmount to /root
+	mount /dev/disk/by-partlabel/userdata /tmpmnt
+	mount --bind /tmpmnt/ubuntu ${rootmnt}
+	# originally we used following line (for variable reference)
+	# mount ${roflag} ${FSTYPE:+-t ${FSTYPE} }${ROOTFLAGS} ${ROOT} ${rootmnt}
+	mountroot_status="$?"
+
+	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-bottom"
+	run_scripts /scripts/local-bottom
+	[ "$quiet" != "y" ] && log_end_msg
+}

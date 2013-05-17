@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+if grep -q "^# UNCONFIGURED FSTAB FOR BASE SYSTEM" /etc/fstab; then
+	cp /usr/share/initramfs-tools-ubuntu-touch/fstab /etc/
+fi
+
+#DEBHELPER#
