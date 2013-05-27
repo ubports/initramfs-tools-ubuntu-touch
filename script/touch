@@ -9,6 +9,9 @@ pre_mountroot()
 
 mountroot()
 {
+	# list of possible userdata partition names
+	partlist="UDA userdata"
+
 	pre_mountroot
 
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-premount"
@@ -16,15 +19,24 @@ mountroot()
 	[ "$quiet" != "y" ] && log_end_msg
 
 	# Mount root
-	# 
+	#
 	# Create a temporary mountpoint for the bindmount
 	mkdir -p /tmpmnt
+
 	# Make sure the /dev/disk/by-partlabel has been created by udev before we
 	# try to mount something from there
 	udevadm settle
+
+	# find the right partition
+	for partname in $partlist; do
+		path=$(find /dev -name $partname|grep disk) && break
+	done
+	[ -b "$path" ] || panic "No userdata partition found. Dropping to a shell!"
+
 	# Mount the disk to the temporary mountpoint, then bindmount to /root
-	mount /dev/disk/by-partlabel/userdata /tmpmnt
+	mount $path /tmpmnt
 	mount --bind /tmpmnt/ubuntu ${rootmnt}
+
 	# originally we used following line (for variable reference)
 	# mount ${roflag} ${FSTYPE:+-t ${FSTYPE} }${ROOTFLAGS} ${ROOT} ${rootmnt}
 	mountroot_status="$?"

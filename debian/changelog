@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.2) saucy; urgency=low
+
+  * add finer grained partition detection, support "UDA userdata" as partition
+    names
+  * only suppress /dev/root checking of mountall in fstab, setting up the
+    mountpoints needs to happen by the lxc package
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Mon, 27 May 2013 12:08:32 +0200
+
 initramfs-tools-ubuntu-touch (0.1) saucy; urgency=low
 
   * Initial Release
