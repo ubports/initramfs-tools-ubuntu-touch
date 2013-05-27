@@ -1,3 +1,4 @@
 conf/touch			usr/share/initramfs-tools/conf.d
 script/touch		usr/share/initramfs-tools/scripts
 fstab				usr/share/initramfs-tools-ubuntu-touch
+bootimg/*			usr/share/initramfs-tools-ubuntu-touch

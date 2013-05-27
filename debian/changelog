@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.3) saucy; urgency=low
+
+  * add dependency on abootimg
+  * add bootimg.cfg-$subarch files
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Mon, 27 May 2013 14:38:53 +0200
+
 initramfs-tools-ubuntu-touch (0.2) saucy; urgency=low
 
   * add finer grained partition detection, support "UDA userdata" as partition
