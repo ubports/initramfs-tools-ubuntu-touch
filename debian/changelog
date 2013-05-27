@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.4) saucy; urgency=low
+
+  * depend on udev (>= 175-0ubuntu29) since we rely on the changes
+    introduced with this version
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Mon, 27 May 2013 15:16:42 +0200
+
 initramfs-tools-ubuntu-touch (0.3) saucy; urgency=low
 
   * add dependency on abootimg
