@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.5) saucy; urgency=low
+
+  * write panic info to dmesg so we can read it on failure from
+    /proc/last_kmsg
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 13 Jun 2013 22:46:48 +0200
+
 initramfs-tools-ubuntu-touch (0.4) saucy; urgency=low
 
   * depend on udev (>= 175-0ubuntu29) since we rely on the changes

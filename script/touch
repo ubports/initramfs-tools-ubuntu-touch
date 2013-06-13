@@ -31,7 +31,10 @@ mountroot()
 	for partname in $partlist; do
 		path=$(find /dev -name $partname|grep disk) && break
 	done
-	[ -b "$path" ] || panic "No userdata partition found. Dropping to a shell!"
+	if [ ! -b "$path" ]; then
+	    echo "No userdata partition found !" >/dev/kmsg
+		panic "no userdata partition found, dropping to a shell!"
+	fi
 
 	# Mount the disk to the temporary mountpoint, then bindmount to /root
 	mount $path /tmpmnt
