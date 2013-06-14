@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.6) saucy; urgency=low
+
+  * set console=tty1 in grouper bootimg config
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 14 Jun 2013 13:33:53 +0200
+
 initramfs-tools-ubuntu-touch (0.5) saucy; urgency=low
 
   * write panic info to dmesg so we can read it on failure from
