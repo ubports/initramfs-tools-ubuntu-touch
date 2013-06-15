@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.9) saucy; urgency=low
+
+  * divert all initramfs scripts and hooks we dont need
+  * make touch initramfs hook executable
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Sat, 15 Jun 2013 13:26:46 +0200
+
 initramfs-tools-ubuntu-touch (0.8) saucy; urgency=low
 
   * use MODULES=list by default to make sure we do not get modules installed.
