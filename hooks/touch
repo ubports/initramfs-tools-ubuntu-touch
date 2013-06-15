@@ -1,0 +1,26 @@
+#!/bin/sh -e
+# initramfs hook for fixing broken rtc clock
+# without battery
+
+MINKVER="2.6.24"
+PREREQ=""
+
+# Output pre-requisites
+prereqs()
+{
+        echo "$PREREQ"
+}
+
+case "$1" in
+    prereqs)
+        prereqs
+        exit 0
+        ;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+# reboot and adbd
+copy_exec /sbin/reboot /sbin
+copy_exec /bin/readlink /sbin
+copy_exec /usr/bin/adbd /sbin

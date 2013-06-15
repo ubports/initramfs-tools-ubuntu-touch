@@ -10,7 +10,7 @@ pre_mountroot()
 mountroot()
 {
 	# list of possible userdata partition names
-	partlist="UDA userdata"
+	partlist="userdata UDA DATAFS"
 
 	pre_mountroot
 
@@ -23,25 +23,35 @@ mountroot()
 	# Create a temporary mountpoint for the bindmount
 	mkdir -p /tmpmnt
 
-	# Make sure the /dev/disk/by-partlabel has been created by udev before we
-	# try to mount something from there
+	# Make sure the device has been created by udev before we try to mount
 	udevadm settle
 
 	# find the right partition
 	for partname in $partlist; do
-		path=$(find /dev -name $partname|grep disk) && break
+		part=$(find /dev -name $partname)
+		path=$(readlink -f $part)
+		[ -n "$path" ] && break
 	done
-	if [ ! -b "$path" ]; then
-	    echo "No userdata partition found !" >/dev/kmsg
-		panic "no userdata partition found, dropping to a shell!"
+	if [ -z "$path" ]; then
+		echo "initrd: could not find partition !" >/dev/kmsg || true
+		echo 0 >/sys/class/android_usb/android0/enable || true
+		echo 18d1 >/sys/class/android_usb/android0/idVendor || true
+		echo D002 >/sys/class/android_usb/android0/idProduct || true
+		echo adb >/sys/class/android_usb/android0/functions || true
+		echo 1 >/sys/class/android_usb/android0/enable || true
+		mkdir -p /system/bin
+		cp /bin/sh /system/bin/
+		echo "initrd: starting adbd for debugging" >/dev/kmsg || true
+		/sbin/adbd
 	fi
+	echo "initrd: mounting $path" >/dev/kmsg || true
 
 	# Mount the disk to the temporary mountpoint, then bindmount to /root
 	mount $path /tmpmnt
 	mount --bind /tmpmnt/ubuntu ${rootmnt}
 
 	# originally we used following line (for variable reference)
-	# mount ${roflag} ${FSTYPE:+-t ${FSTYPE} }${ROOTFLAGS} ${ROOT} ${rootmnt}
+	#mount ${roflag} ${FSTYPE:+-t ${FSTYPE} }${ROOTFLAGS} ${ROOT} ${rootmnt}
 	mountroot_status="$?"
 
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-bottom"

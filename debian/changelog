@@ -1,3 +1,14 @@
+initramfs-tools-ubuntu-touch (0.7) saucy; urgency=low
+
+  * make the data partition detection more generic and use the actual device
+    name as detected by readlink
+  * ship adbd in the initrd and start it if the rootfs detection fails
+  * ship upstarts reboot command so reboot -f recovery/bootloader works
+  * add "DATAFS" to the allowed names for the data partition
+  * add swapfile to default fstab entries
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Sat, 15 Jun 2013 12:26:29 +0200
+
 initramfs-tools-ubuntu-touch (0.6) saucy; urgency=low
 
   * set console=tty1 in grouper bootimg config

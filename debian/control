@@ -8,10 +8,12 @@ Standards-Version: 3.9.4
 Package: initramfs-tools-ubuntu-touch
 Architecture: all
 Multi-Arch: foreign
-Depends: initramfs-tools, abootimg, udev (>= 175-0ubuntu29), ${misc:Depends}
+Depends: initramfs-tools, abootimg, udev (>= 175-0ubuntu29), upstart, coreutils, android-tools-adbd, ${misc:Depends}
 Description: tools for mounting an Ubuntu Touch rootfs
  This package contains the scripts to boot an Ubuntu Touch device.
  It also ships a default fstab that uses the android device paths based
  on partition label. By default it will mount the android userdata
  partition, then do a bind mount of the ubuntu subdir in there to become
  the root filesystem.
+ .
+ On failure the script will fire up an adb debugging shell
