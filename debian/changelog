@@ -1,3 +1,11 @@
+initramfs-tools-ubuntu-touch (0.8) saucy; urgency=low
+
+  * use MODULES=list by default to make sure we do not get modules installed.
+    seems some kernels suddenly grew modules that make the initrd to big for
+    the boot partition.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Sat, 15 Jun 2013 12:44:37 +0200
+
 initramfs-tools-ubuntu-touch (0.7) saucy; urgency=low
 
   * make the data partition detection more generic and use the actual device
