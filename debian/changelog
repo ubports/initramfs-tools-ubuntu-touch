@@ -1,3 +1,17 @@
+initramfs-tools-ubuntu-touch (0.12) saucy; urgency=low
+
+  * make sure find only returns one link to the userdata partition in
+    mountroot, this should fix manta booting
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 19 Jun 2013 14:18:26 +0200
+
+initramfs-tools-ubuntu-touch (0.11) saucy; urgency=low
+
+  * add a wait after starting adbd so we dont move on and hopefully do not
+    reboot the nexus 10 if the rootfs mount fails
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Tue, 18 Jun 2013 00:57:14 +0200
+
 initramfs-tools-ubuntu-touch (0.10) saucy; urgency=low
 
   * allow 16M bootimg on mako, for some reason zImage in the mako kernel

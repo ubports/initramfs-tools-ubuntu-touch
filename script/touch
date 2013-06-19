@@ -28,7 +28,7 @@ mountroot()
 
 	# find the right partition
 	for partname in $partlist; do
-		part=$(find /dev -name $partname)
+		part=$(find /dev -name $partname|tail -1)
 		path=$(readlink -f $part)
 		[ -n "$path" ] && break
 	done
@@ -43,6 +43,7 @@ mountroot()
 		cp /bin/sh /system/bin/
 		echo "initrd: starting adbd for debugging" >/dev/kmsg || true
 		/sbin/adbd
+		wait $!
 	fi
 	echo "initrd: mounting $path" >/dev/kmsg || true
 
