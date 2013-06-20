@@ -1,5 +1,5 @@
 conf/touch			usr/share/initramfs-tools/conf.d
-script/touch		usr/share/initramfs-tools/scripts
+scripts/			usr/share/initramfs-tools/scripts
 hooks/touch			usr/share/initramfs-tools/hooks
 fstab				usr/share/initramfs-tools-ubuntu-touch
 bootimg/*			usr/share/initramfs-tools-ubuntu-touch

@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.13) saucy; urgency=low
+
+  * move adbd to be spawned by a panic hook so it will also be started on
+    other errors than missing root device.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 20 Jun 2013 13:23:57 +0200
+
 initramfs-tools-ubuntu-touch (0.12) saucy; urgency=low
 
   * make sure find only returns one link to the userdata partition in

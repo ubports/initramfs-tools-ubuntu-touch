@@ -33,17 +33,8 @@ mountroot()
 		[ -n "$path" ] && break
 	done
 	if [ -z "$path" ]; then
-		echo "initrd: could not find partition !" >/dev/kmsg || true
-		echo 0 >/sys/class/android_usb/android0/enable || true
-		echo 18d1 >/sys/class/android_usb/android0/idVendor || true
-		echo D002 >/sys/class/android_usb/android0/idProduct || true
-		echo adb >/sys/class/android_usb/android0/functions || true
-		echo 1 >/sys/class/android_usb/android0/enable || true
-		mkdir -p /system/bin
-		cp /bin/sh /system/bin/
-		echo "initrd: starting adbd for debugging" >/dev/kmsg || true
-		/sbin/adbd
-		wait $!
+        echo "No root device found. Spawning adbd ..." >/dev/kmsg || true
+        panic "No root device found. Spawning adbd ..."
 	fi
 	echo "initrd: mounting $path" >/dev/kmsg || true
 
