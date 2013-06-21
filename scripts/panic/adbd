@@ -14,13 +14,17 @@ prereqs)
 esac
 
 
-echo 0 >/sys/class/android_usb/android0/enable || true
-echo 18d1 >/sys/class/android_usb/android0/idVendor || true
-echo D002 >/sys/class/android_usb/android0/idProduct || true
-echo adb >/sys/class/android_usb/android0/functions || true
-echo 1 >/sys/class/android_usb/android0/enable || true
+echo "initrd: enabling USB debugging" >/dev/kmsg || true
 
-echo 0 >/sys/module/kernel/parameters/panic || true
+path="/sys/class/android_usb/android0"
+panicpath="/sys/module/kernel/parameters/panic"
+
+echo 18d1 >$path/idVendor || true
+echo D002 >$path/idProduct || true
+echo adb >$path/functions || true
+echo 1 >$path/enable || true
+
+echo 0 >$panicpath || true
 
 mkdir -p /system/bin
 cp /bin/sh /system/bin/
@@ -28,4 +32,3 @@ cp /bin/sh /system/bin/
 echo "initrd: starting adbd for USB debugging" >/dev/kmsg || true
 
 /sbin/adbd
-wait $!
