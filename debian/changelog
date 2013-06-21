@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.14) saucy; urgency=low
+
+  * ugh, do not install scripts/ into scripts/scripts/
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 21 Jun 2013 13:02:44 +0200
+
 initramfs-tools-ubuntu-touch (0.13) saucy; urgency=low
 
   * move adbd to be spawned by a panic hook so it will also be started on
