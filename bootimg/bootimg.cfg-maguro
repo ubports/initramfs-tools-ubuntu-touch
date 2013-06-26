@@ -5,4 +5,4 @@ ramdiskaddr = 0x81000000
 secondaddr = 0x80f00000
 tagsaddr = 0x80000100
 name = "Ubuntu Touch Bootimage"
-cmdline =
+cmdline = apparmor=0

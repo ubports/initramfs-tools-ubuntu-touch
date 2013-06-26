@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.16) saucy; urgency=low
+
+  * add apparmor=0 to all commandlines until the apparmor kernel breakage is
+    fixed
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 26 Jun 2013 18:03:36 +0200
+
 initramfs-tools-ubuntu-touch (0.15) saucy; urgency=low
 
   * fix the adbd panic script ... now works for all panics reliable except
