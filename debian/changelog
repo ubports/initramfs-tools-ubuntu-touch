@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.17) saucy; urgency=low
+
+  * Removing the 'apparmor=0' boot cmdline as the android container profile is
+    now set to unconfined by lxc-android-config
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Thu, 27 Jun 2013 15:29:31 -0300
+
 initramfs-tools-ubuntu-touch (0.16) saucy; urgency=low
 
   * add apparmor=0 to all commandlines until the apparmor kernel breakage is

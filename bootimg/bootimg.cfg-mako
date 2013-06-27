@@ -5,4 +5,4 @@ ramdiskaddr = 0x81800000
 secondaddr = 0x81100000
 tagsaddr = 0x80200100
 name = "Ubuntu Touch Bootimage"
-cmdline = console=ttyHSL0,115200,n8 androidboot.hardware=mako lpj=67677 apparmor=0
+cmdline = console=ttyHSL0,115200,n8 androidboot.hardware=mako lpj=67677
