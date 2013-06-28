@@ -33,18 +33,97 @@ mountroot()
 		[ -n "$path" ] && break
 	done
 	if [ -z "$path" ]; then
-        echo "No root device found. Spawning adbd ..." >/dev/kmsg || true
-        panic "No root device found. Spawning adbd ..."
+		echo "initrd: Couldn't find data partition. Spawning adbd ..." >/dev/kmsg || true
+		panic "Couldn't find data partition. Spawning adbd ..."
 	fi
 	echo "initrd: mounting $path" >/dev/kmsg || true
 
-	# Mount the disk to the temporary mountpoint, then bindmount to /root
+	# Mount the data partition to a temporary mount point
 	mount $path /tmpmnt
-	mount --bind /tmpmnt/ubuntu ${rootmnt}
 
-	# originally we used following line (for variable reference)
-	#mount ${roflag} ${FSTYPE:+-t ${FSTYPE} }${ROOTFLAGS} ${ROOT} ${rootmnt}
-	mountroot_status="$?"
+	# Loop-mounted flipped model
+	if [ -e /tmpmnt/system.img ]; then
+		# Prepare the root filesystem
+		if [ -e /tmpmnt/.developer_mode ]; then
+			echo "initrd: mounting system.img (developer mode)" >/dev/kmsg || true
+			mount -o loop,rw /tmpmnt/system.img ${rootmnt}
+			mountroot_status="$?"
+		else
+			echo "initrd: mounting system.img (user mode)" >/dev/kmsg || true
+			mount -o loop,ro /tmpmnt/system.img ${rootmnt}
+			mountroot_status="$?"
+		fi
+		mount --move /tmpmnt ${rootmnt}/data
+
+		# Create any missing persistent directory
+		for dir in system-data system-data/dbus \
+		    system-data/network-manager/connections \
+		    system-data/network-manager/lib \
+		    system-data/log system-data/log/upstart userdata android-data; do
+			mkdir -p ${rootmnt}/data/$dir
+		done
+
+		# Move some data to persistant storage (first-boot)
+		if [ ! -d ${rootmnt}/data/phablet ]; then
+			cp -Ra ${rootmnt}/home/phablet ${rootmnt}/data/phablet
+		fi
+
+		# Extract the fstab from the android initrd
+		# NOTE: we should find a faster way of doing that or cache it
+		mkdir -p /android-system /android-initrd
+		mount -o loop,ro ${rootmnt}/var/lib/lxc/android/system.img /android-system
+		OLD_CWD=$(pwd)
+		cd /android-initrd
+		cat /android-system/boot/android-ramdisk.img | gzip -d | cpio -i fstab*
+		cd $OLD_CWD
+
+		# Mount all the Android partitions
+		mount -t tmpfs none ${rootmnt}/android
+		cat /android-initrd/fstab.* | while read line; do
+			set -- $line
+
+			# Skip any unwanted entry
+			echo $1 | egrep -q "^#" && continue
+			([ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]) && continue
+			([ "$2" = "/system" ] || [ "$2" = "/data" ]) && continue
+
+			label=$(echo $1 | awk -F/ '{print $NF}')
+			path="/dev/disk/by-partlabel/$label"
+			[ -z "$label" ] || [ ! -e "$path" ] && continue
+
+			mkdir -p ${rootmnt}/android/$2
+			echo "initrd: mounting $path as ${rootmnt}/android/$2" >/dev/kmsg || true
+			mount $path ${rootmnt}/android/$2 -t $3 -o $4
+		done
+
+		# system is a special case
+		mkdir ${rootmnt}/android/system
+		echo "initrd: mounting ${rootmnt}/var/lib/lxc/android/system.img as ${rootmnt}/android/system" >/dev/kmsg || true
+		mount --move /android-system ${rootmnt}/android/system
+
+		# Apply device-specific udev rules
+		device=$(grep ^ro.product.device= ${rootmnt}/android/system/build.prop |sed -e 's/.*=//')
+		if [ -n "$device" ]; then
+			echo "initrd: identified device as $device" >/dev/kmsg || true
+			mount --bind ${rootmnt}/usr/lib/lxc-android-config/70-$device.rules ${rootmnt}/lib/udev/rules.d/70-android.rules
+		fi
+
+		# Bind-mount /lib/modules from Android
+		[ -e /system/lib/modules ] && mount --bind /system/lib/modules /lib/modules
+
+		# Bind-mount the fstab
+		mount --bind ${rootmnt}/usr/lib/lxc-android-config/image-fstab ${rootmnt}/etc/fstab
+
+	# Old flipped model
+	elif [ -d /tmpmnt/ubuntu ]; then
+		mount --bind /tmpmnt/ubuntu ${rootmnt}
+		mountroot_status="$?"
+
+	# Possibly a re-partitioned device
+	else
+		echo "initrd: Couldn't find a system partition." >/dev/kmsg || true
+		panic "Couldn't find a system partition. Spawning adbd ..."
+	fi
 
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-bottom"
 	run_scripts /scripts/local-bottom
