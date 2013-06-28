@@ -1,11 +1,11 @@
-initramfs-tools-ubuntu-touch (0.18) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.18) saucy; urgency=low
 
   * Add support for loop-mounted images. This will detect the presence of a
     system.img file on the data partition, if found, it'll use it as the
     rootfs, mount it read-only (unless .developer_mode exists), then mount
     all the Android partitions and finally setup a bunch of bind-mounts.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 28 Jun 2013 16:41:53 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 28 Jun 2013 16:43:17 -0400
 
 initramfs-tools-ubuntu-touch (0.17) saucy; urgency=low
 
