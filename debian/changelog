@@ -1,3 +1,11 @@
+initramfs-tools-ubuntu-touch (0.19) saucy; urgency=low
+
+  * ship a "flash-touch-initrd" script
+  * ship a hook in /etc/initramfs/post-update.d/zz-flash-touch-initrd script
+    to be called automatically after update-initramfs
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Sun, 30 Jun 2013 11:13:02 +0200
+
 initramfs-tools-ubuntu-touch (0.18) saucy; urgency=low
 
   * Add support for loop-mounted images. This will detect the presence of a
