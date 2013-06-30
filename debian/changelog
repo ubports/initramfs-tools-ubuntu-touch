@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.21) saucy; urgency=low
+
+  * for some reason the adbd linked libs do not get copied by copy_exec, as a
+    workaround install them one by one from the touch hook for now
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Sun, 30 Jun 2013 16:22:05 +0200
+
 initramfs-tools-ubuntu-touch (0.20) saucy; urgency=low
 
   * ship a "flash-touch-kernel" developer tool so one does not always need to
