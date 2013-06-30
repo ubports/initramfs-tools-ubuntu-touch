@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.20) saucy; urgency=low
+
+  * ship a "flash-touch-kernel" developer tool so one does not always need to
+    look up the bootimg path
+  * add a notification that ubuntu-touch-generic-initrd needs to be updated to
+    clean target
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Sun, 30 Jun 2013 14:17:17 +0200
+
 initramfs-tools-ubuntu-touch (0.19) saucy; urgency=low
 
   * ship a "flash-touch-initrd" script
