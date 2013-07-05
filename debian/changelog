@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.22) saucy; urgency=low
+
+  * add support for "KERNEL" partition name (used by some samsung devices)
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 05 Jul 2013 14:43:31 +0200
+
 initramfs-tools-ubuntu-touch (0.21) saucy; urgency=low
 
   * for some reason the adbd linked libs do not get copied by copy_exec, as a

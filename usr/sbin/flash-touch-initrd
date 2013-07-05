@@ -1,6 +1,6 @@
 #!/bin/sh
 
-BOOT="LNX boot"
+BOOT="LNX boot KERNEL"
 INITRD="/usr/lib/ubuntu-touch-generic-initrd/initrd.img-touch"
 
 # we dont want to run if FLASH_KERNEL_SKIP is set, the ubuntu
