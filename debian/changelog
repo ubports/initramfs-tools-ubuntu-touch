@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.23) saucy; urgency=low
+
+  * add system-image to the read-write paths.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 08 Jul 2013 18:53:18 -0400
+
 initramfs-tools-ubuntu-touch (0.22) saucy; urgency=low
 
   * add support for "KERNEL" partition name (used by some samsung devices)
