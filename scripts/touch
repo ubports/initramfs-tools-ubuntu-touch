@@ -58,7 +58,7 @@ mountroot()
 		# Create any missing persistent directory
 		for dir in system-data system-data/dbus \
 		    system-data/network-manager/connections \
-		    system-data/network-manager/lib \
+		    system-data/network-manager/lib system-data/system-image \
 		    system-data/log system-data/log/upstart userdata android-data; do
 			mkdir -p ${rootmnt}/data/$dir
 		done
