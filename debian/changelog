@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.24) UNRELEASED; urgency=low
+
+  * replace /data by /userdata for the userdata mount point.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Thu, 11 Jul 2013 11:44:41 -0400
+
 initramfs-tools-ubuntu-touch (0.23) saucy; urgency=low
 
   * add system-image to the read-write paths.
