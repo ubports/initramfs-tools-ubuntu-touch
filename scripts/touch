@@ -53,19 +53,19 @@ mountroot()
 			mount -o loop,ro /tmpmnt/system.img ${rootmnt}
 			mountroot_status="$?"
 		fi
-		mount --move /tmpmnt ${rootmnt}/data
+		mount --move /tmpmnt ${rootmnt}/userdata
 
 		# Create any missing persistent directory
 		for dir in system-data system-data/dbus \
 		    system-data/network-manager/connections \
 		    system-data/network-manager/lib system-data/system-image \
 		    system-data/log system-data/log/upstart userdata android-data; do
-			mkdir -p ${rootmnt}/data/$dir
+			mkdir -p ${rootmnt}/userdata/$dir
 		done
 
 		# Move some data to persistant storage (first-boot)
-		if [ ! -d ${rootmnt}/data/phablet ]; then
-			cp -Ra ${rootmnt}/home/phablet ${rootmnt}/data/phablet
+		if [ ! -d ${rootmnt}/userdata/phablet ]; then
+			cp -Ra ${rootmnt}/home/phablet ${rootmnt}/userdata/phablet
 		fi
 
 		# Extract the fstab from the android initrd
