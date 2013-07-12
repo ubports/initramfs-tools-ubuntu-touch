@@ -55,23 +55,38 @@ mountroot()
 		fi
 		mount --move /tmpmnt ${rootmnt}/userdata
 
+		# Mount the android system partition to a temporary location
+		mkdir -p /android-system /android-initrd
+		mount -o loop,ro ${rootmnt}/var/lib/lxc/android/system.img /android-system
+
+		# Get device information
+		device=$(grep ^ro.product.device= /android-system/build.prop |sed -e 's/.*=//')
+		[ -z "$device" ] && device="unknown"
+		echo "initrd: device is $device" >/dev/kmsg || true
+
 		# Create any missing persistent directory
-		for dir in system-data system-data/dbus \
-		    system-data/network-manager/connections \
-		    system-data/network-manager/lib system-data/system-image \
-		    system-data/log system-data/log/upstart userdata android-data; do
+		for dir in \
+		    android-data \
+		    system-data/etc/NetworkManager/system-connections \
+		    system-data/etc/system-image/ \
+		    system-data/var/lib/dbus \
+		    system-data/var/lib/NetworkManager \
+		    system-data/var/lib/system-image \
+		    system-data/var/log \
+		; do
 			mkdir -p ${rootmnt}/userdata/$dir
 		done
 
 		# Move some data to persistant storage (first-boot)
-		if [ ! -d ${rootmnt}/userdata/phablet ]; then
-			cp -Ra ${rootmnt}/home/phablet ${rootmnt}/userdata/phablet
+		if [ ! -d ${rootmnt}/userdata/user-data ]; then
+			cp -Ra ${rootmnt}/home ${rootmnt}/userdata/user-data
+		fi
+		if [ ! -e ${rootmnt}/userdata/system-data/etc/system-image/client.ini ]; then
+			sed "s/^device: .*/${device}: $/" ${rootmnt}/etc/system-image/client.ini > ${rootmnt}/userdata/system-data/etc/system-image/client.ini
 		fi
 
 		# Extract the fstab from the android initrd
 		# NOTE: we should find a faster way of doing that or cache it
-		mkdir -p /android-system /android-initrd
-		mount -o loop,ro ${rootmnt}/var/lib/lxc/android/system.img /android-system
 		OLD_CWD=$(pwd)
 		cd /android-initrd
 		cat /android-system/boot/android-ramdisk.img | gzip -d | cpio -i fstab*
@@ -102,9 +117,7 @@ mountroot()
 		mount --move /android-system ${rootmnt}/android/system
 
 		# Apply device-specific udev rules
-		device=$(grep ^ro.product.device= ${rootmnt}/android/system/build.prop |sed -e 's/.*=//')
-		if [ -n "$device" ]; then
-			echo "initrd: identified device as $device" >/dev/kmsg || true
+		if [ "$device" != "unknown" ]; then
 			mount --bind ${rootmnt}/usr/lib/lxc-android-config/70-$device.rules ${rootmnt}/lib/udev/rules.d/70-android.rules
 		fi
 
