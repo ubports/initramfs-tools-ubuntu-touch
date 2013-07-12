@@ -1,10 +1,10 @@
-initramfs-tools-ubuntu-touch (0.25) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.25) saucy; urgency=low
 
   * Update initrd for loop-back images:
     - Add code to generate a new system-image config file
     - Rename most permanent storage mounts to match the fs hierarchy.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 12 Jul 2013 14:58:23 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 12 Jul 2013 15:00:26 -0400
 
 initramfs-tools-ubuntu-touch (0.24) saucy; urgency=low
 
