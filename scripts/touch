@@ -82,7 +82,7 @@ mountroot()
 			cp -Ra ${rootmnt}/home ${rootmnt}/userdata/user-data
 		fi
 		if [ ! -e ${rootmnt}/userdata/system-data/etc/system-image/client.ini ]; then
-			sed "s/^device: .*/${device}: $/" ${rootmnt}/etc/system-image/client.ini > ${rootmnt}/userdata/system-data/etc/system-image/client.ini
+			sed "s/^device: .*/device: ${device}/" ${rootmnt}/etc/system-image/client.ini > ${rootmnt}/userdata/system-data/etc/system-image/client.ini
 		fi
 
 		# Extract the fstab from the android initrd
