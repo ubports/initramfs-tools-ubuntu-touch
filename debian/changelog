@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.27) saucy; urgency=low
+
+  * Properly detect the partitions on grouper (image install only).
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 17 Jul 2013 13:54:30 -0400
+
 initramfs-tools-ubuntu-touch (0.26) saucy; urgency=low
 
   * Fix broken sed statement in client.ini file generation.
