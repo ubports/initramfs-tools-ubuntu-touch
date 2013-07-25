@@ -68,7 +68,6 @@ mountroot()
 		for dir in \
 		    android-data \
 		    system-data/etc/NetworkManager/system-connections \
-		    system-data/etc/system-image/ \
 		    system-data/var/lib/dbus \
 		    system-data/var/lib/NetworkManager \
 		    system-data/var/lib/system-image \
@@ -81,9 +80,11 @@ mountroot()
 		if [ ! -d ${rootmnt}/userdata/user-data ]; then
 			cp -Ra ${rootmnt}/home ${rootmnt}/userdata/user-data
 		fi
-		if [ ! -e ${rootmnt}/userdata/system-data/etc/system-image/client.ini ]; then
-			sed "s/^device: .*/device: ${device}/" ${rootmnt}/etc/system-image/client.ini > ${rootmnt}/userdata/system-data/etc/system-image/client.ini
-		fi
+
+		# Cleanup some old paths
+		for dir in system-data/etc/system-image; do
+			rm -Rf ${rootmnt}/userdata/$dir
+		done
 
 		# Extract the fstab from the android initrd
 		# NOTE: we should find a faster way of doing that or cache it
