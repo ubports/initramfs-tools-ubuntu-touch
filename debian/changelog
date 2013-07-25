@@ -1,8 +1,8 @@
-initramfs-tools-ubuntu-touch (0.28) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.28) saucy; urgency=low
 
   * Remove system-image/client.ini mangling and add cleanup code.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Thu, 25 Jul 2013 13:12:47 +0100
+ -- Stéphane Graber <stgraber@ubuntu.com>  Thu, 25 Jul 2013 13:13:17 +0100
 
 initramfs-tools-ubuntu-touch (0.27) saucy; urgency=low
 
