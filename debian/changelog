@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.29) saucy; urgency=low
+
+  * add /etc/kernel/postinst.d/flash-touch-kernel so it gets flashed
+    automatically during kernel .deb installation
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 31 Jul 2013 10:47:43 +0200
+
 initramfs-tools-ubuntu-touch (0.28) saucy; urgency=low
 
   * Remove system-image/client.ini mangling and add cleanup code.
