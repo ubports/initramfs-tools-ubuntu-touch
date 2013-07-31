@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.30) saucy; urgency=low
+
+  * drop the last change, somehow FLASH_KERNEL_SKIP isnt set during live-build
+    builds anymore and exporting it forcefully during build seems to not help
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 31 Jul 2013 15:30:57 +0200
+
 initramfs-tools-ubuntu-touch (0.29) saucy; urgency=low
 
   * add /etc/kernel/postinst.d/flash-touch-kernel so it gets flashed
