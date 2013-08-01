@@ -10,7 +10,7 @@ pre_mountroot()
 mountroot()
 {
 	# list of possible userdata partition names
-	partlist="userdata UDA DATAFS"
+	partlist="userdata UDA DATAFS USERDATA"
 
 	pre_mountroot
 
