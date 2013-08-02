@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.32) saucy; urgency=low
+
+  * Update scripts/touch to parse the new writable-paths file instead of
+    using its hardcoded list of paths.
+    From that point on, only lxc-anroid-config will need updating when
+    adding/removing persistent paths to the touch images.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 02 Aug 2013 18:11:29 +0200
+
 initramfs-tools-ubuntu-touch (0.31) saucy; urgency=low
 
   * also add USERDATA to accepted partition labels
