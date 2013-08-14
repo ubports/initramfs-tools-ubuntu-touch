@@ -39,6 +39,7 @@ mountroot()
 			case ${x} in
 			datapart=*)
 				path=${x#*=}
+				;;
 			esac
 		done
 	fi

@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.34) saucy; urgency=low
+
+  * fix typo
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 14 Aug 2013 16:41:07 +0200
+
 initramfs-tools-ubuntu-touch (0.33) saucy; urgency=low
 
   * add support for datapart= commandline option in touch boots, this way
