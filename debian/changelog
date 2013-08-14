@@ -1,3 +1,11 @@
+initramfs-tools-ubuntu-touch (0.33) saucy; urgency=low
+
+  * add support for datapart= commandline option in touch boots, this way
+    devices that do not have partition labels can define where the /data
+    partition lives for the mount to succeed.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 14 Aug 2013 15:30:56 +0200
+
 initramfs-tools-ubuntu-touch (0.32) saucy; urgency=low
 
   * Update scripts/touch to parse the new writable-paths file instead of

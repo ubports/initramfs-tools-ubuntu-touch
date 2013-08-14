@@ -32,6 +32,17 @@ mountroot()
 		path=$(readlink -f $part)
 		[ -n "$path" ] && break
 	done
+
+	# override with a possible cmdline parameter
+	if grep -q datapart= /proc/cmdline; then
+		for x in $(cat /proc/cmdline); do
+			case ${x} in
+			datapart=*)
+				path=${x#*=}
+			esac
+		done
+	fi
+
 	if [ -z "$path" ]; then
 		echo "initrd: Couldn't find data partition. Spawning adbd ..." >/dev/kmsg || true
 		panic "Couldn't find data partition. Spawning adbd ..."
