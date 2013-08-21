@@ -182,6 +182,13 @@ mountroot()
 		# Bind-mount /lib/modules from Android
 		[ -e /system/lib/modules ] && mount --bind /system/lib/modules /lib/modules
 
+		if [ -d ${rootmnt}/custom/home ] && [ ! -e ${rootmnt}/userdata/user-data/phablet/.customized ]; then
+			echo "initrd: copying custom content" >/dev/kmsg || true
+			cp -Rap ${rootmnt}/custom/home/* ${rootmnt}/userdata/user-data/phablet
+			cp -Rap ${rootmnt}/custom/home/.[a-zA-Z0-9]* ${rootmnt}/userdata/user-data/phablet
+			touch ${rootmnt}/userdata/user-data/phablet/.customized
+		fi
+
 	# Old flipped model
 	elif [ -d /tmpmnt/ubuntu ]; then
 		mount --bind /tmpmnt/ubuntu ${rootmnt}
