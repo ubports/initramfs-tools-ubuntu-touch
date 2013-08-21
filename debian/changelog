@@ -1,9 +1,9 @@
-initramfs-tools-ubuntu-touch (0.36) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.36) saucy; urgency=low
 
   [ Matthew Fischer ]
   * Add code to support /custom on image based devices.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 21 Aug 2013 16:12:20 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 21 Aug 2013 16:13:22 -0400
 
 initramfs-tools-ubuntu-touch (0.35) saucy; urgency=low
 
