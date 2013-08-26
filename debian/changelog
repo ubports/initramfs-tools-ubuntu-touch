@@ -1,8 +1,8 @@
-initramfs-tools-ubuntu-touch (0.37) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.37) saucy; urgency=low
 
   * Replace .develoepr_mode by .writable_image (LP: #1217048)
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 26 Aug 2013 15:07:18 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 26 Aug 2013 15:08:46 -0400
 
 initramfs-tools-ubuntu-touch (0.36) saucy; urgency=low
 
