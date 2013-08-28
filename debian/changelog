@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.40) saucy; urgency=low
+
+  * Add a shell syntax check (sh -n) for etc/initramfs/post-update.d/* hooks/*
+    scripts/panic/adbd scripts/touch usr/sbin/* to catch typos in the future.
+
+ -- Loïc Minier <loic.minier@ubuntu.com>  Wed, 28 Aug 2013 22:12:50 +0200
+
 initramfs-tools-ubuntu-touch (0.39) saucy; urgency=low
 
   * Fix typo in previous upload.

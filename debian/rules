@@ -3,6 +3,12 @@
 %:
 	dh $@
 
+override_dh_auto_test:
+	@set -e; for f in etc/initramfs/post-update.d/* hooks/* scripts/panic/adbd scripts/touch usr/sbin/*; do \
+	    echo "Checking sh syntax of $$f"; \
+	    sh -n $$f; \
+	done
+
 override_dh_auto_clean:
 	@echo "\n\n############################# WARNING !! ##############################\n#"
 	@echo "# Please do not forget to update the ubuntu-touch-generic-initrd"
