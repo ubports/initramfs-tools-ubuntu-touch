@@ -1,10 +1,14 @@
 initramfs-tools-ubuntu-touch (0.38) UNRELEASED; urgency=low
 
+  [ Loïc Minier ]
   * Add a 5th column to writable-paths with the mount options; writable-paths
     should use "defaults" for temporary mounts and "none" for persistent
-    mounts; "bind" gets preprended for persistent mounts.
+    mounts; "bind" gets preprended for persistent mounts. (LP: #1217866)
 
- -- Loïc Minier <loic.minier@ubuntu.com>  Wed, 28 Aug 2013 14:36:33 +0200
+  [ Stéphane Graber ]
+  * Add transition code for .developer_mode to .writable_image
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 28 Aug 2013 09:59:06 -0400
 
 initramfs-tools-ubuntu-touch (0.37) saucy; urgency=low
 

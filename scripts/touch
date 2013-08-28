@@ -55,6 +55,9 @@ mountroot()
 
 	# Loop-mounted flipped model
 	if [ -e /tmpmnt/system.img ]; then
+		# Transition .developer_mode to .writable_image
+		[ -e /tmpmnt/.developer_mode ] && mv /tmpmnt/.developer_mode /tmpmnt/.writable_image
+
 		# Prepare the root filesystem
 		if [ -e /tmpmnt/.writable_image ]; then
 			echo "initrd: mounting system.img (image developer mode)" >/dev/kmsg || true
