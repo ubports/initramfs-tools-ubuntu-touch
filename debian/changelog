@@ -1,4 +1,4 @@
-initramfs-tools-ubuntu-touch (0.38) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.38) saucy; urgency=low
 
   [ Loïc Minier ]
   * Add a 5th column to writable-paths with the mount options; writable-paths
@@ -8,7 +8,7 @@ initramfs-tools-ubuntu-touch (0.38) UNRELEASED; urgency=low
   [ Stéphane Graber ]
   * Add transition code for .developer_mode to .writable_image
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 28 Aug 2013 09:59:06 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 28 Aug 2013 09:59:53 -0400
 
 initramfs-tools-ubuntu-touch (0.37) saucy; urgency=low
 
