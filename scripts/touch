@@ -138,7 +138,7 @@ mountroot()
 				fi
 
 				# Write the fstab entry
-				if [ "$5" = "none" ]' then
+				if [ "$5" = "none" ]; then
 					echo "$path $1 none bind 0 1" >> $FSTAB
 				else
 					echo "$path $1 none bind,$5 0 1" >> $FSTAB
