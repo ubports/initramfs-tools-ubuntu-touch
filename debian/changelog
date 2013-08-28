@@ -1,8 +1,8 @@
-initramfs-tools-ubuntu-touch (0.39) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.39) saucy; urgency=low
 
   * Fix typo in previous upload.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 28 Aug 2013 13:54:54 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 28 Aug 2013 13:55:12 -0400
 
 initramfs-tools-ubuntu-touch (0.38) saucy; urgency=low
 
