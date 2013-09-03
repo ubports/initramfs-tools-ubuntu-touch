@@ -2,6 +2,9 @@
 
 set -e
 
+
+[ "$(dpkg --print-architecture)" != "armhf" ] && exit 0
+
 export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
 
@@ -53,7 +56,6 @@ cp -a conf/touch ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/touch ${ROOT}/usr/share/initramfs-tools/hooks
 
-#VER=$(fakeroot -i chroot.save fakechroot chroot ${ROOT} grep-status -P initramfs-tools-ubuntu-touch -s Version| sed  's/^.* //')
 VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
 export LD_LIBRARY_PATH=/lib/arm-linux-gnueabihf
 fakeroot -i chroot.save fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
