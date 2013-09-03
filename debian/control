@@ -2,7 +2,7 @@ Source: initramfs-tools-ubuntu-touch
 Section: utils
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Build-Depends: debhelper (>= 7.0.50~)
+Build-Depends: debhelper (>= 9), debootstrap, lsb-release, fakeroot, fakechroot
 Standards-Version: 3.9.4
 
 Package: initramfs-tools-ubuntu-touch
