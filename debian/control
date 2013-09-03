@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 9), debootstrap, lsb-release, fakeroot, fakechroot
 Standards-Version: 3.9.4
 
 Package: initramfs-tools-ubuntu-touch
-Architecture: any
+Architecture: amd64 i386 armhf
 Multi-Arch: foreign
 Depends: initramfs-tools, abootimg, udev (>= 175-0ubuntu29), upstart, coreutils, android-tools-adbd, ${misc:Depends}
 Description: tools for mounting an Ubuntu Touch rootfs
