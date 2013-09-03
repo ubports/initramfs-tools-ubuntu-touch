@@ -9,9 +9,12 @@ override_dh_auto_test:
 	    sh -n $$f; \
 	done
 
+
 override_dh_auto_clean:
-	@echo "\n\n############################# WARNING !! ##############################\n#"
-	@echo "# Please do not forget to update the ubuntu-touch-generic-initrd"
-	@echo "# package if you made any changes that could end up inside an initrd !"
-	@echo "# But wait until the change has been promoted to the archive first !"
-	@echo "#\n############################# WARNING !! ##############################\n\n"
+	rm -rf ./build || true
+	rm -rf ./chroot.save || true
+	dh_auto_clean
+
+override_dh_auto_build:
+	./build-initrd.sh
+	dh_auto_build

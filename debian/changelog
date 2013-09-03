@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.41) saucy; urgency=low
+
+  * merge ubuntu-touch-generic-initrd so we save one no-change upload per
+    build
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Tue, 03 Sep 2013 11:13:12 +0200
+
 initramfs-tools-ubuntu-touch (0.40) saucy; urgency=low
 
   * Add a shell syntax check (sh -n) for etc/initramfs/post-update.d/* hooks/*

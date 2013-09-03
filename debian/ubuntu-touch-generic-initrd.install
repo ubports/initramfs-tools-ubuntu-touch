@@ -1,0 +1,2 @@
+build/boot/* usr/lib/ubuntu-touch-generic-initrd/
+build/var/lib/initramfs-tools/touch var/lib/initramfs-tools/
