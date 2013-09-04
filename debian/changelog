@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.45) saucy; urgency=low
+
+  * Fix /lib/modules bind-mounting code in initrd.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Wed, 04 Sep 2013 23:40:29 -0400
+
 initramfs-tools-ubuntu-touch (0.44) saucy; urgency=low
 
   * Restrict initramfs-tools-ubuntu-touch to arches that build adbd.
