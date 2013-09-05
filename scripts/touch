@@ -189,6 +189,10 @@ mountroot()
 		# Bind-mount /lib/modules from Android
 		[ -e ${rootmnt}/android/system/lib/modules ] && mount --bind ${rootmnt}/android/system/lib/modules ${rootmnt}/lib/modules
 
+		# Setup the swap device
+		[ -e ${rootmnt}/userdata/SWAP.img ] && swapon ${rootmnt}/userdata/SWAP.img
+
+		# Apply customized content
 		if [ -d ${rootmnt}/custom/home ] && [ ! -e ${rootmnt}/userdata/user-data/phablet/.customized ]; then
 			echo "initrd: copying custom content" >/dev/kmsg || true
 			cp -Rap ${rootmnt}/custom/home/* ${rootmnt}/userdata/user-data/phablet
