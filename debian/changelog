@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.47) saucy; urgency=low
+
+  * Chown the home directory after copying the customization files.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Thu, 05 Sep 2013 15:33:03 -0400
+
 initramfs-tools-ubuntu-touch (0.46) saucy; urgency=low
 
   * Setup the SWAP device if present.

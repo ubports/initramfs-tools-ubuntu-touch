@@ -198,6 +198,7 @@ mountroot()
 			cp -Rap ${rootmnt}/custom/home/* ${rootmnt}/userdata/user-data/phablet
 			cp -Rap ${rootmnt}/custom/home/.[a-zA-Z0-9]* ${rootmnt}/userdata/user-data/phablet
 			touch ${rootmnt}/userdata/user-data/phablet/.customized
+			chown -R 32011:32011 ${rootmnt}/userdata/user-data/phablet
 		fi
 
 	# Old flipped model
