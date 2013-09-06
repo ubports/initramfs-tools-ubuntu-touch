@@ -1,8 +1,8 @@
-initramfs-tools-ubuntu-touch (0.48) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.48) saucy; urgency=low
 
   * Add /bin/chown to the initrd.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 06 Sep 2013 12:46:59 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 06 Sep 2013 12:47:25 -0400
 
 initramfs-tools-ubuntu-touch (0.47) saucy; urgency=low
 
