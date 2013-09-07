@@ -118,6 +118,8 @@ mountroot()
 				fi
 
 				if [ ! -e "$srcpath" ]; then
+					dstown=$(stat -c "%u:%g" $dstpath)
+					dstmode=$(stat -c "%a" $dstpath)
 					# Process new persistent paths
 					mkdir -p ${srcpath%/*}
 					if [ ! -d "$dstpath" ]; then
@@ -126,6 +128,8 @@ mountroot()
 							cp -a $dstpath $srcpath
 						else
 							touch $srcpath
+							chown $dstown $srcpath
+							chmod $dstmode $srcpath
 						fi
 					else
 						# Deal with redirected directories
@@ -133,6 +137,8 @@ mountroot()
 							cp -aR $dstpath $srcpath
 						else
 							mkdir $srcpath
+							chown $dstown $srcpath
+							chmod $dstmode $srcpath
 						fi
 					fi
 				fi
@@ -198,7 +204,8 @@ mountroot()
 			cp -Rap ${rootmnt}/custom/home/* ${rootmnt}/userdata/user-data/phablet
 			cp -Rap ${rootmnt}/custom/home/.[a-zA-Z0-9]* ${rootmnt}/userdata/user-data/phablet
 			touch ${rootmnt}/userdata/user-data/phablet/.customized
-			chown -R 32011:32011 ${rootmnt}/userdata/user-data/phablet
+			dstown=$(stat -c "%u:%g" ${rootmnt}/userdata/user-data/phablet)
+			chown -R $dstown ${rootmnt}/userdata/user-data/phablet
 		fi
 
 	# Old flipped model
