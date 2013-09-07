@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.49) UNRELEASED; urgency=low
+
+  * Use stat to restore the file ownership and permissions when diverting
+    to persistent storage.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Sat, 07 Sep 2013 13:51:26 -0400
+
 initramfs-tools-ubuntu-touch (0.48) saucy; urgency=low
 
   * Add /bin/chown to the initrd.
