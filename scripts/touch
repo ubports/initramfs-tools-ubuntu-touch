@@ -7,6 +7,35 @@ pre_mountroot()
 	[ "$quiet" != "y" ] && log_end_msg
 }
 
+sync_dirs() {
+	base=$1
+	source=$2
+	target=$3
+
+	OLD_PWD=$PWD
+	cd $base
+
+	for file in $source/*
+	do
+		# Skip empty directories
+		[ ! -e "$base/$file" ] && continue
+
+		# If the target already exists as a file, there's nothing we can do
+		[ -e "$target/$file" ] && [ ! -d "$target/$file" ] && continue
+
+		# If the target doesn't exist, just copy it over
+		if [ ! -e "$target/$file" ]; then
+			cp -Ra "$base/$file" "$target/$file"
+			continue
+		fi
+
+		# That leaves us with directories and a recursive call
+		[ -d $file ] && sync_dirs $base $file $target
+	done
+
+	cd $OLD_PWD
+}
+
 mountroot()
 {
 	# list of possible userdata partition names
@@ -107,7 +136,7 @@ mountroot()
 			if [ "$3" = "temporary" ]; then
 				# Temporary entries are simple, just mount a tmpfs
 				echo "tmpfs $1 tmpfs $5 0 1" >> $FSTAB
-			elif [ "$3" = "persistent" ]; then
+			elif [ "$3" = "persistent" ] || [ "$3" = "synced" ]; then
 				# Figure out the source path
 				if [ "$2" = "auto" ]; then
 					srcpath="${rootmnt}/userdata/system-data/$1"
@@ -118,9 +147,9 @@ mountroot()
 				fi
 
 				if [ ! -e "$srcpath" ]; then
+					# Process new persistent or synced paths
 					dstown=$(stat -c "%u:%g" $dstpath)
 					dstmode=$(stat -c "%a" $dstpath)
-					# Process new persistent paths
 					mkdir -p ${srcpath%/*}
 					if [ ! -d "$dstpath" ]; then
 						# Deal with redirected files
@@ -141,6 +170,9 @@ mountroot()
 							chmod $dstmode $srcpath
 						fi
 					fi
+				elif [ "$3" = "synced" ]; then
+					# Process existing synced paths
+					sync_dirs $dstpath . $srcpath
 				fi
 
 				# Write the fstab entry
