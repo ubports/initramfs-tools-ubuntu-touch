@@ -1,8 +1,8 @@
-initramfs-tools-ubuntu-touch (0.51) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.51) saucy; urgency=low
 
   * No change rebuild to try and get bin/chown et al back in the initrd...
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Tue, 01 Oct 2013 09:44:41 -0400
+ -- Stéphane Graber <stgraber@ubuntu.com>  Tue, 01 Oct 2013 09:45:39 -0400
 
 initramfs-tools-ubuntu-touch (0.50) saucy; urgency=low
 
