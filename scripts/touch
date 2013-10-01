@@ -162,7 +162,7 @@ mountroot()
 						fi
 					else
 						# Deal with redirected directories
-						if [ "$4" = "transition" ]; then
+						if [ "$4" = "transition" ] || [ "$3" = "synced" ]; then
 							cp -aR $dstpath $srcpath
 						else
 							mkdir $srcpath
