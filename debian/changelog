@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.54) saucy; urgency=low
+
+  * Only run fakeroot once in build-initrd.sh, rather than trying to use a
+    saved environment in fragile and incorrect ways.
+
+ -- Colin Watson <cjwatson@ubuntu.com>  Tue, 01 Oct 2013 16:41:12 +0100
+
 initramfs-tools-ubuntu-touch (0.53) saucy; urgency=low
 
   * No change rebuild to try and get bin/chown et al back in the initrd...

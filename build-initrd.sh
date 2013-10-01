@@ -3,6 +3,10 @@
 set -e
 
 
+if [ -z "$FAKEROOTKEY" ]; then
+	exec fakeroot "$0" "$@"
+fi
+
 [ "$(dpkg --print-architecture)" != "armhf" ] && exit 0
 
 export FLASH_KERNEL_SKIP=1
@@ -17,7 +21,7 @@ ROOT=./build
 
 # create a plain chroot to work in
 rm -rf $ROOT
-fakeroot -s chroot.save fakechroot debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR
+fakechroot debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR
 
 # TODO this can be dropped once all packages are in main
 sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
@@ -49,16 +53,16 @@ EOF
 chmod a+rx $ROOT/sbin/initctl
 
 # install all packages we need to roll the generic initrd
-fakeroot -i chroot.save fakechroot chroot $ROOT apt-get -y update
-fakeroot -i chroot.save fakechroot -c fakechroot-config chroot $ROOT apt-get -y install $INCHROOTPKGS
+fakechroot chroot $ROOT apt-get -y update
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y install $INCHROOTPKGS
 
 cp -a conf/touch ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/touch ${ROOT}/usr/share/initramfs-tools/hooks
 
 VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
-export LD_LIBRARY_PATH=/lib/arm-linux-gnueabihf
-fakeroot -i chroot.save fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/arm-linux-gnueabihf"
+fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
 
 # make a more generically named link so external scripts can use the file without parsing the version
 cd $ROOT/boot
@@ -66,4 +70,4 @@ ln -s initrd.img-touch-$VER initrd.img-touch
 cd - >/dev/null 2>&1
 
 # put a fake sha1sum file in place so update-initramfs -u works OOTB for developers
-fakeroot -i chroot.save fakechroot chroot $ROOT sha1sum /boot/initrd.img-touch >$ROOT/var/lib/initramfs-tools/touch
+fakechroot chroot $ROOT sha1sum /boot/initrd.img-touch >$ROOT/var/lib/initramfs-tools/touch
