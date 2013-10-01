@@ -58,6 +58,7 @@ mountroot()
 	# find the right partition
 	for partname in $partlist; do
 		part=$(find /dev -name $partname|tail -1)
+		[ -z "$part" ] && continue
 		path=$(readlink -f $part)
 		[ -n "$path" ] && break
 	done
