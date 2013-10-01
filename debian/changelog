@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.52) UNRELEASED; urgency=low
+
+  * Fix synced mode to act as if "transition" is set on first boot.
+    Otherwise we need to boots to get the files copied to writable storage.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Tue, 01 Oct 2013 10:20:39 -0400
+
 initramfs-tools-ubuntu-touch (0.51) saucy; urgency=low
 
   * No change rebuild to try and get bin/chown et al back in the initrd...
