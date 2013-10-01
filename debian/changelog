@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.53) saucy; urgency=low
+
+  * No change rebuild to try and get bin/chown et al back in the initrd...
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Tue, 01 Oct 2013 16:34:00 +0200
+
 initramfs-tools-ubuntu-touch (0.52) saucy; urgency=low
 
   * Fix synced mode to act as if "transition" is set on first boot.
