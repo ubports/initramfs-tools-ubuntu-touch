@@ -20,11 +20,11 @@ sync_dirs() {
 		# Skip empty directories
 		[ ! -e "$base/$file" ] && continue
 
-		# If the target already exists as a file, there's nothing we can do
-		[ -e "$target/$file" ] && [ ! -d "$target/$file" ] && continue
+		# If the target already exists as a file or link, there's nothing we can do
+		[ -e "$target/$file" -o -L "$target/$file" ] && [ ! -d "$target/$file" ] && continue
 
 		# If the target doesn't exist, just copy it over
-		if [ ! -e "$target/$file" ]; then
+		if [ ! -e "$target/$file" -a ! -L "$target/$file" ]; then
 			cp -Ra "$base/$file" "$target/$file"
 			continue
 		fi

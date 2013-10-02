@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.55) saucy; urgency=low
+
+  * Fix synced mode to not write over existing symlinks. (LP: #1234051)
+
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Wed, 02 Oct 2013 11:47:11 +0200
+
 initramfs-tools-ubuntu-touch (0.54) saucy; urgency=low
 
   * Only run fakeroot once in build-initrd.sh, rather than trying to use a
