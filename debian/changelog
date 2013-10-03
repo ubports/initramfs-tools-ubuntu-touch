@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.56) saucy; urgency=low
+
+  [ Dmitrijs Ledkovs ]
+  * Skip calling readlink with empty $part, when partition from in
+    partlist loop is not found, thus avoiding busybox help output printed
+    on the console.
+
+ -- Loïc Minier <loic.minier@ubuntu.com>  Thu, 03 Oct 2013 18:49:06 +0200
+
 initramfs-tools-ubuntu-touch (0.55) saucy; urgency=low
 
   * Fix synced mode to not write over existing symlinks. (LP: #1234051)
