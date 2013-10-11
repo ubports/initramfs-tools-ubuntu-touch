@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.57) saucy; urgency=low
+
+  * Don't run fsck on the phone since we don't have plymouth and so
+    can't prompt the user in case of any problem.
+  * Mount /var/lib/ureadahead from the initrd if available so that it's
+    ready to be used by the time ureadahead starts.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 11 Oct 2013 13:01:15 -0400
+
 initramfs-tools-ubuntu-touch (0.56) saucy; urgency=low
 
   [ Dmitrijs Ledkovs ]

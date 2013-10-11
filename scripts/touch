@@ -120,7 +120,7 @@ mountroot()
 		FSTAB=${rootmnt}/etc/fstab
 		touch ${rootmnt}/run/image.fstab
 		mount -o bind ${rootmnt}/run/image.fstab $FSTAB || panic "drop to adb"
-		echo "/dev/root / rootfs defaults,ro 0 1" >> $FSTAB
+		echo "/dev/root / rootfs defaults,ro 0 0" >> $FSTAB
 
 		# Process the list of bind-mounts
 		# (but don't mount them, mountall will do it)
@@ -136,7 +136,7 @@ mountroot()
 
 			if [ "$3" = "temporary" ]; then
 				# Temporary entries are simple, just mount a tmpfs
-				echo "tmpfs $1 tmpfs $5 0 1" >> $FSTAB
+				echo "tmpfs $1 tmpfs $5 0 0" >> $FSTAB
 			elif [ "$3" = "persistent" ] || [ "$3" = "synced" ]; then
 				# Figure out the source path
 				if [ "$2" = "auto" ]; then
@@ -178,9 +178,9 @@ mountroot()
 
 				# Write the fstab entry
 				if [ "$5" = "none" ]; then
-					echo "$path $1 none bind 0 1" >> $FSTAB
+					echo "$path $1 none bind 0 0" >> $FSTAB
 				else
-					echo "$path $1 none bind,$5 0 1" >> $FSTAB
+					echo "$path $1 none bind,$5 0 0" >> $FSTAB
 				fi
 			else
 				continue
@@ -227,6 +227,13 @@ mountroot()
 
 		# Bind-mount /lib/modules from Android
 		[ -e ${rootmnt}/android/system/lib/modules ] && mount --bind ${rootmnt}/android/system/lib/modules ${rootmnt}/lib/modules
+
+		# Bind-mount /var/lib/ureadahead if available on persistent storage
+		# this is required because ureadahead runs before mountall
+		if [ -e ${rootmnt}/userdata/system-data/var/lib/ureadahead ] && \
+				[ -e ${rootmnt}/var/lib/ureadahead ]; then
+			mount --bind ${rootmnt}/userdata/system-data/var/lib/ureadahead ${rootmnt}/var/lib/ureadahead
+		fi
 
 		# Setup the swap device
 		[ -e ${rootmnt}/userdata/SWAP.img ] && swapon ${rootmnt}/userdata/SWAP.img
