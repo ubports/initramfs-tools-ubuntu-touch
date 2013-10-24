@@ -109,7 +109,14 @@ mountroot()
 		[ -z "$device" ] && device="unknown"
 		echo "initrd: device is $device" >/dev/kmsg || true
 
+		# Mount /system for the emulator
+		if [ "$device" = "generic" ]; then
+		    mkdir -p ${rootmnt}/system
+		    mount /dev/mtdblock0 ${rootmnt}/system
+		fi
+
 		# Mount some tmpfs
+		mkdir -p ${rootmnt}/android
 		mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
 		mount -o rw,nosuid,noexec,relatime,mode=755 -t tmpfs tmpfs ${rootmnt}/run
 

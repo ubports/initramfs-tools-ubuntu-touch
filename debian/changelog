@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.58) devel; urgency=low
+
+  * Create ${rootmnt}/android directory before mounting.
+  * Mount ${rootmnt}/system for the emulator.
+
+ -- Dmitrijs Ledkovs <xnox@ubuntu.com>  Thu, 24 Oct 2013 18:15:54 +0100
+
 initramfs-tools-ubuntu-touch (0.57) saucy; urgency=low
 
   * Don't run fsck on the phone since we don't have plymouth and so
