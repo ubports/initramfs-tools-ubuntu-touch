@@ -246,14 +246,18 @@ mountroot()
 		[ -e ${rootmnt}/userdata/SWAP.img ] && swapon ${rootmnt}/userdata/SWAP.img
 
 		# Apply customized content
-		if [ -d ${rootmnt}/custom/home ] && [ ! -e ${rootmnt}/userdata/user-data/phablet/.customized ]; then
-			echo "initrd: copying custom content" >/dev/kmsg || true
-			cp -Rap ${rootmnt}/custom/home/* ${rootmnt}/userdata/user-data/phablet
-			cp -Rap ${rootmnt}/custom/home/.[a-zA-Z0-9]* ${rootmnt}/userdata/user-data/phablet
-			touch ${rootmnt}/userdata/user-data/phablet/.customized
-			dstown=$(stat -c "%u:%g" ${rootmnt}/userdata/user-data/phablet)
-			chown -R $dstown ${rootmnt}/userdata/user-data/phablet
-		fi
+		for user in $(ls /home)
+		do
+			if [ -d ${rootmnt}/custom/home ] && [ ! -e ${rootmnt}/userdata/user-data/$user/.customized ]; then
+				echo "initrd: copying custom content" >/dev/kmsg || true
+				cp -Rap ${rootmnt}/custom/home/* ${rootmnt}/userdata/user-data/$user
+				cp -Rap ${rootmnt}/custom/home/.[a-zA-Z0-9]* ${rootmnt}/userdata/user-data/$user
+				touch ${rootmnt}/userdata/user-data/$user/.customized
+				dstown=$(stat -c "%u:%g" ${rootmnt}/userdata/user-data/$user)
+				chown -R $dstown ${rootmnt}/userdata/user-data/$user
+			fi
+		done
+
 
 	# Old flipped model
 	elif [ -d /tmpmnt/ubuntu ]; then
