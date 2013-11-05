@@ -246,10 +246,10 @@ mountroot()
 		[ -e ${rootmnt}/userdata/SWAP.img ] && swapon ${rootmnt}/userdata/SWAP.img
 
 		# Apply customized content
-		for user in $(ls /home)
+		for user in $(ls ${rootmnt}/userdata/user-data/)
 		do
 			if [ -d ${rootmnt}/custom/home ] && [ ! -e ${rootmnt}/userdata/user-data/$user/.customized ]; then
-				echo "initrd: copying custom content" >/dev/kmsg || true
+				echo "initrd: copying custom content tp " >/dev/kmsg || true
 				cp -Rap ${rootmnt}/custom/home/* ${rootmnt}/userdata/user-data/$user
 				cp -Rap ${rootmnt}/custom/home/.[a-zA-Z0-9]* ${rootmnt}/userdata/user-data/$user
 				touch ${rootmnt}/userdata/user-data/$user/.customized
