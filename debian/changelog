@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.59) trusty; urgency=low
+
+  * Drop manual /system mount when running with the emulator
+  * Also handle MTD based devices when parsing fstab
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Fri, 08 Nov 2013 04:20:14 -0200
+
 initramfs-tools-ubuntu-touch (0.58) devel; urgency=low
 
   * Create ${rootmnt}/android directory before mounting.

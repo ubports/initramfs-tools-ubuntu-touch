@@ -109,12 +109,6 @@ mountroot()
 		[ -z "$device" ] && device="unknown"
 		echo "initrd: device is $device" >/dev/kmsg || true
 
-		# Mount /system for the emulator
-		if [ "$device" = "generic" ]; then
-		    mkdir -p ${rootmnt}/system
-		    mount /dev/mtdblock0 ${rootmnt}/system
-		fi
-
 		# Mount some tmpfs
 		mkdir -p ${rootmnt}/android
 		mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
@@ -212,10 +206,18 @@ mountroot()
 
 			label=$(echo $1 | awk -F/ '{print $NF}')
 			[ -z "$label" ] && continue
-			for dir in by-partlabel by-name by-label; do
-				path="/dev/disk/$dir/$label"
-				[ -e "$path" ] && break
-			done
+
+			echo "initrd: checking mount label $label" >/dev/kmsg || true
+
+			# MTD based devices, such as the emulator
+			if echo $label | egrep -q "^mtdblock"; then
+				path="/dev/$label"
+			else
+				for dir in by-partlabel by-name by-label; do
+					path="/dev/disk/$dir/$label"
+					[ -e "$path" ] && break
+				done
+			fi
 			[ ! -e "$path" ] && continue
 
 			mkdir -p ${rootmnt}/android/$2
