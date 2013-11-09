@@ -207,17 +207,11 @@ mountroot()
 			label=$(echo $1 | awk -F/ '{print $NF}')
 			[ -z "$label" ] && continue
 
-			echo "initrd: checking mount label $label" >/dev/kmsg || true
+			for dir in by-partlabel by-name by-label; do
+				path="/dev/disk/$dir/$label"
+				[ -e "$path" ] && break
+			done
 
-			# MTD based devices, such as the emulator
-			if echo $label | egrep -q "^mtdblock"; then
-				path="/dev/$label"
-			else
-				for dir in by-partlabel by-name by-label; do
-					path="/dev/disk/$dir/$label"
-					[ -e "$path" ] && break
-				done
-			fi
 			[ ! -e "$path" ] && continue
 
 			mkdir -p ${rootmnt}/android/$2

@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.60) trusty; urgency=low
+
+  * revert the last change as it breaks booting innn image 16 completely
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Sat, 09 Nov 2013 15:28:58 +0100
+
 initramfs-tools-ubuntu-touch (0.59) trusty; urgency=low
 
   * Drop manual /system mount when running with the emulator
