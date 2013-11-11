@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.61) trusty; urgency=low
+
+  * Reverting the revert as that had nothing to do with the image issue
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Mon, 11 Nov 2013 12:13:45 -0200
+
 initramfs-tools-ubuntu-touch (0.60) trusty; urgency=low
 
   * revert the last change as it breaks booting innn image 16 completely
