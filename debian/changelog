@@ -1,3 +1,13 @@
+initramfs-tools-ubuntu-touch (0.62) UNRELEASED; urgency=low
+
+  [ Chris Wayne ]
+  * Add support for multiple users in customization code. (LP: #1230409)
+
+  [ Stéphane Graber ]
+  * Update the above to work should the path contain spaces.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 18 Nov 2013 17:11:46 -0500
+
 initramfs-tools-ubuntu-touch (0.61) trusty; urgency=low
 
   * Reverting the revert as that had nothing to do with the image issue
