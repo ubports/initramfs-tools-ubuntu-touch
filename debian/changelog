@@ -1,4 +1,4 @@
-initramfs-tools-ubuntu-touch (0.62) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.62) trusty; urgency=low
 
   [ Chris Wayne ]
   * Add support for multiple users in customization code. (LP: #1230409)
@@ -6,7 +6,7 @@ initramfs-tools-ubuntu-touch (0.62) UNRELEASED; urgency=low
   [ Stéphane Graber ]
   * Update the above to work should the path contain spaces.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 18 Nov 2013 17:11:46 -0500
+ -- Stéphane Graber <stgraber@ubuntu.com>  Mon, 18 Nov 2013 17:12:42 -0500
 
 initramfs-tools-ubuntu-touch (0.61) trusty; urgency=low
 
