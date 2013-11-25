@@ -89,13 +89,18 @@ mountroot()
 		[ -e /tmpmnt/.developer_mode ] && mv /tmpmnt/.developer_mode /tmpmnt/.writable_image
 
 		# Prepare the root filesystem
+		# NOTE: We mount it read-write in all cases, then remount read-only.
+		#       This is to workaround a behaviour change in busybox which now
+		#       uses read-only loops if the fs is initially mounted read-only.
+		#       An alternative implementation would be to add losetup support
+		#       to busybox and do the mount in two steps (rw loop, ro fs).
+		mount -o loop,rw /tmpmnt/system.img ${rootmnt}
 		if [ -e /tmpmnt/.writable_image ]; then
 			echo "initrd: mounting system.img (image developer mode)" >/dev/kmsg || true
-			mount -o loop,rw /tmpmnt/system.img ${rootmnt}
 			mountroot_status="$?"
 		else
 			echo "initrd: mounting system.img (user mode)" >/dev/kmsg || true
-			mount -o loop,ro /tmpmnt/system.img ${rootmnt}
+			mount -o remount,ro ${rootmnt}
 			mountroot_status="$?"
 		fi
 		mount --move /tmpmnt ${rootmnt}/userdata
