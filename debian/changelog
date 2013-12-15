@@ -1,8 +1,8 @@
-initramfs-tools-ubuntu-touch (0.64) UNRELEASED; urgency=low
+initramfs-tools-ubuntu-touch (0.64) trusty; urgency=low
 
   * Enable discard (TRIM) for the userdata partition.
 
- -- Stéphane Graber <stgraber@ubuntu.com>  Fri, 13 Dec 2013 14:50:24 -0500
+ -- Stéphane Graber <stgraber@ubuntu.com>  Sun, 15 Dec 2013 18:57:41 -0500
 
 initramfs-tools-ubuntu-touch (0.63) trusty; urgency=low
 
