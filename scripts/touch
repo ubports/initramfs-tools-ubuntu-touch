@@ -81,7 +81,7 @@ mountroot()
 	echo "initrd: mounting $path" >/dev/kmsg || true
 
 	# Mount the data partition to a temporary mount point
-	mount $path /tmpmnt
+	mount -o discard $path /tmpmnt
 
 	# Loop-mounted flipped model
 	if [ -e /tmpmnt/system.img ]; then

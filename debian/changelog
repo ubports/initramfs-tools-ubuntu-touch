@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.64) trusty; urgency=low
+
+  * Enable discard (TRIM) for the userdata partition.
+
+ -- Stéphane Graber <stgraber@ubuntu.com>  Sun, 15 Dec 2013 18:57:41 -0500
+
 initramfs-tools-ubuntu-touch (0.63) trusty; urgency=low
 
   * Workaround behaviour change in busybox where loop mounted fs that
