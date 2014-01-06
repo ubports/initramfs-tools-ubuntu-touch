@@ -13,7 +13,7 @@ export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
 
 # list all packages needed for a generic ubuntu touch initrd here
-INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-tools-adbd fakechroot"
+INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-tools-adbd"
 
 MIRROR=$(grep "^deb " /etc/apt/sources.list|head -1|cut -d' ' -f2)
 RELEASE=$(lsb_release -cs)
@@ -62,6 +62,14 @@ cp -a hooks/touch ${ROOT}/usr/share/initramfs-tools/hooks
 
 VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/arm-linux-gnueabihf"
+
+## Temporary HACK to work around FTBFS
+mkdir -p $ROOT/usr/lib/arm-linux-gnueabihf/fakechroot
+mkdir -p $ROOT/usr/lib/arm-linux-gnueabihf/libfakeroot
+
+touch $ROOT/usr/lib/arm-linux-gnueabihf/fakechroot/libfakechroot.so
+touch $ROOT/usr/lib/arm-linux-gnueabihf/libfakeroot/libfakeroot-sysv.so
+
 fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
 
 # make a more generically named link so external scripts can use the file without parsing the version

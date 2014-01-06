@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.66) trusty; urgency=medium
+
+  * revert last change and replace it by an equally ugly but possibly working
+    fix.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Mon, 06 Jan 2014 19:06:00 +0100
+
 initramfs-tools-ubuntu-touch (0.65) trusty; urgency=medium
 
   * Ugly workaround to fix FTBFS, add fakechroot to the chroot packages.
