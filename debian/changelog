@@ -1,3 +1,11 @@
+initramfs-tools-ubuntu-touch (0.67) trusty; urgency=medium
+
+  * make sure that flash-touch-initrd and flash-touch-kernel can not be run
+    if the system operates in dual boot mode (where the boot.img lives in
+    the recovery partition)
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 22 Jan 2014 14:48:49 +0100
+
 initramfs-tools-ubuntu-touch (0.66) trusty; urgency=medium
 
   * revert last change and replace it by an equally ugly but possibly working

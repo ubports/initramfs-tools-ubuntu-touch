@@ -9,6 +9,11 @@ if [ -n "$FLASH_KERNEL_SKIP" ]; then
     exit 0
 fi
 
+# if there is "recovery" on the kernel cmdline, we are most
+# likely running in dual boot mode, do nothing then, else we
+# trash the android boot.img
+grep -q recovery /proc/cmdline && exit 0
+
 case "$1" in
     /*)
         [ ! -e "$1" ] && echo "E: No kernel at $1" && exit 1
