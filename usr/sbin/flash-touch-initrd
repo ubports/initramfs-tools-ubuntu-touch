@@ -26,7 +26,7 @@ case "$1" in
 esac
 
 for i in $BOOT; do
-    path=$(find /dev -name "*$i*"|grep disk| head -1)
+    path=$(find /dev -name "$i"|grep disk| head -1)
     [ -n "$path" ] && break
 done
 

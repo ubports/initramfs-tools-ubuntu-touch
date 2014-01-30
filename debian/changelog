@@ -1,3 +1,11 @@
+initramfs-tools-ubuntu-touch (0.68) trusty; urgency=medium
+
+  * fix flash-touch-initrd for cdimage images to do an exact match of the
+    partition name instead of using wildcards (to fix cdimage based installs
+    on flo)
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 30 Jan 2014 13:26:45 +0100
+
 initramfs-tools-ubuntu-touch (0.67) trusty; urgency=medium
 
   * make sure that flash-touch-initrd and flash-touch-kernel can not be run
