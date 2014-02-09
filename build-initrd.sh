@@ -7,10 +7,10 @@ if [ -z "$FAKEROOTKEY" ]; then
 	exec fakeroot "$0" "$@"
 fi
 
-[ "$(dpkg --print-architecture)" != "armhf" ] && exit 0
-
 export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
+
+DEB_HOST_MULTIARCH=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 # list all packages needed for a generic ubuntu touch initrd here
 INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-tools-adbd"
@@ -59,16 +59,17 @@ fakechroot -c fakechroot-config chroot $ROOT apt-get -y install $INCHROOTPKGS
 cp -a conf/touch ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/touch ${ROOT}/usr/share/initramfs-tools/hooks
+sed -i -e "s/#DEB_HOST_MULTIARCH#/$DEB_HOST_MULTIARCH/g" ${ROOT}/usr/share/initramfs-tools/hooks/touch
 
 VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/arm-linux-gnueabihf"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
 
 ## Temporary HACK to work around FTBFS
-mkdir -p $ROOT/usr/lib/arm-linux-gnueabihf/fakechroot
-mkdir -p $ROOT/usr/lib/arm-linux-gnueabihf/libfakeroot
+mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot
+mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot
 
-touch $ROOT/usr/lib/arm-linux-gnueabihf/fakechroot/libfakechroot.so
-touch $ROOT/usr/lib/arm-linux-gnueabihf/libfakeroot/libfakeroot-sysv.so
+touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot/libfakechroot.so
+touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
 
 fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
 

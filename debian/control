@@ -19,7 +19,7 @@ Description: tools for mounting an Ubuntu Touch rootfs
  On failure the script will fire up an adb debugging shell
 
 Package: ubuntu-touch-generic-initrd
-Architecture: armhf
+Architecture: amd64 i386 armhf
 Multi-Arch: foreign
 Depends: ${misc:Depends}
 Suggests: abootimg
