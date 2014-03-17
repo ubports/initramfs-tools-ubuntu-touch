@@ -201,7 +201,7 @@ mountroot()
 		cd $OLD_CWD
 
 		# Mount all the Android partitions
-		cat /android-initrd/fstab.* | while read line; do
+		cat /android-initrd/fstab* | while read line; do
 			set -- $line
 
 			# Skip any unwanted entry
@@ -214,7 +214,7 @@ mountroot()
 
 			echo "initrd: checking mount label $label" >/dev/kmsg || true
 
-			for dir in by-partlabel by-name by-label; do
+			for dir in by-partlabel by-name by-label by-path by-uuid by-partuuid by-id; do
 				path="/dev/disk/$dir/$label"
 				[ -e "$path" ] && break
 			done
