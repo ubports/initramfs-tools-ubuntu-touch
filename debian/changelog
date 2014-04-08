@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.72) trusty; urgency=medium
+
+  * make the globbing in append-|remove-cmdline-arg more precise
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Tue, 08 Apr 2014 20:43:53 +0200
+
 initramfs-tools-ubuntu-touch (0.71) trusty; urgency=medium
 
   * instead of gunzipping the android initrd for just retrieving fstab, lets

@@ -3,7 +3,7 @@
 BOOT="LNX boot KERNEL"
 
 for i in $BOOT; do
-    path=$(find /dev -name "*$i*"|grep disk| head -1)
+    path=$(find /dev -name "$i"|grep disk| head -1)
     [ -n "$path" ] && break
 done
 
