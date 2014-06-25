@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Build-Depends: debhelper (>= 9), debootstrap, lsb-release, fakeroot, fakechroot
-Standards-Version: 3.9.4
+Standards-Version: 3.9.5
 
 Package: initramfs-tools-ubuntu-touch
 Architecture: amd64 i386 armhf

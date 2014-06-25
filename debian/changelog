@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.73) utopic; urgency=medium
+
+  * Bind mounting ubuntu overlay files (available in the android system.img)
+  * Bumping standards-version to 3.9.5
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Wed, 25 Jun 2014 16:08:46 -0300
+
 initramfs-tools-ubuntu-touch (0.72) trusty; urgency=medium
 
   * make the globbing in append-|remove-cmdline-arg more precise

@@ -7,6 +7,22 @@ pre_mountroot()
 	[ "$quiet" != "y" ] && log_end_msg
 }
 
+mount_ubuntu_overlay() {
+	source=$1
+	target=$2
+
+	if [ -d ${source} ]; then
+		OLD_PWD=$PWD
+		cd ${source}
+
+		for overlay in `find . -type f`; do
+			[ -f ${target}/${overlay} ] && mount --bind ${source}/${overlay} ${target}/${overlay}
+		done
+
+		cd $OLD_PWD
+	fi
+}
+
 sync_dirs() {
 	base=$1
 	source=$2
@@ -236,8 +252,11 @@ mountroot()
 		echo "initrd: mounting ${rootmnt}/var/lib/lxc/android/system.img as ${rootmnt}/android/system" >/dev/kmsg || true
 		mount --move /android-system ${rootmnt}/android/system
 
+		# Ubuntu overlay available in the Android system image (hardware specific configs)
+		mount_ubuntu_overlay ${rootmnt}/android/system/ubuntu ${rootmnt}
+
 		# Apply device-specific udev rules
-		if [ "$device" != "unknown" ]; then
+		if [ ! -f ${rootmnt}/android/system/ubuntu/lib/udev/rules.d/70-android.rules ] && [ "$device" != "unknown" ]; then
 			mount --bind ${rootmnt}/usr/lib/lxc-android-config/70-$device.rules ${rootmnt}/lib/udev/rules.d/70-android.rules
 		fi
 
