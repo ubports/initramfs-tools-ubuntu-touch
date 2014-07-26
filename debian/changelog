@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.74) utopic; urgency=medium
+
+  * Adding support for real partitions, keeping old boot methods
+    - Code originally done by Ondra
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Sat, 26 Jul 2014 21:52:27 -0300
+
 initramfs-tools-ubuntu-touch (0.73) utopic; urgency=medium
 
   * Bind mounting ubuntu overlay files (available in the android system.img)
