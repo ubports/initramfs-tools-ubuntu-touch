@@ -23,43 +23,6 @@ mount_ubuntu_overlay() {
 	fi
 }
 
-parse_initrd_fstab() {
-	echo "initrd: mounting content from the initrd fstab" >/dev/kmsg || true
-
-	# Please make sure rootfs is before /android/system and /android/data,
-	# otherwise they will not be mounted correctly
-	cat /fstab | while read line; do
-		set -- $line
-
-		# Skip any unwanted entry
-		echo $1 | egrep -q "^#" && continue
-		([ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]) && continue
-
-		echo "initrd: checking mount label $1" >/dev/kmsg || true
-
-		[ ! -e "$1" ] && continue
-
-		target=${rootmnt}/$2
-		if [ "$2" = "/tmpmnt" ]; then
-			target=$2
-		fi
-
-		mkdir -p ${target}
-		echo "initrd: mounting $1 as ${target}" >/dev/kmsg || true
-		mount $1 ${target} -t $3 -o $4
-		if [ "$2" == "/" ]; then
-			# Mount some tmpfs
-			echo "initrd: prepare needed tmpfs" >/dev/kmsg || true
-			mkdir -p ${rootmnt}/android
-			mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
-			mount -o rw,nosuid,noexec,relatime,mode=755 -t tmpfs tmpfs ${rootmnt}/run
-
-			# Create some needed paths on tmpfs
-			mkdir -p ${rootmnt}/android/data ${rootmnt}/android/system
-		fi
-	done
-}
-
 sync_dirs() {
 	base=$1
 	source=$2
@@ -108,103 +71,86 @@ mountroot()
 	# Make sure the device has been created by udev before we try to mount
 	udevadm settle
 
-	# Identify the Ubuntu boot mode to be used
-	ubuntu_mode="unknown"
-	if [ -e /fstab ]; then
-		ubuntu_mode="native"
-		echo "initrd: Using native mode (fstab and partitions)" >/dev/kmsg || true
-	else
-		# find the right partition
-		for partname in $partlist; do
-			part=$(find /dev -name $partname|tail -1)
-			[ -z "$part" ] && continue
-			path=$(readlink -f $part)
-			[ -n "$path" ] && break
+	# find the right partition
+	for partname in $partlist; do
+		part=$(find /dev -name $partname|tail -1)
+		[ -z "$part" ] && continue
+		path=$(readlink -f $part)
+		[ -n "$path" ] && break
+	done
+
+	# override with a possible cmdline parameter
+	if grep -q datapart= /proc/cmdline; then
+		for x in $(cat /proc/cmdline); do
+			case ${x} in
+			datapart=*)
+				path=${x#*=}
+				;;
+			esac
 		done
-
-		# override with a possible cmdline parameter
-		if grep -q datapart= /proc/cmdline; then
-			for x in $(cat /proc/cmdline); do
-				case ${x} in
-				datapart=*)
-					path=${x#*=}
-					;;
-				esac
-			done
-		fi
-
-		if [ -n "$path" ]; then
-			echo "initrd: mounting $path" >/dev/kmsg || true
-
-			# Mount the data partition to a temporary mount point
-			mount -o discard $path /tmpmnt
-
-			if [ -e /tmpmnt/system.img ]; then
-				ubuntu_mode="flipped"
-				echo "initrd: Using loop-mounted flipped mode" >/dev/kmsg || true
-			elif [ -d /tmpmnt/ubuntu ]; then
-				ubuntu_mode="unflipped"
-				echo "initrd: Using old unflipped mode" >/dev/kmsg || true
-			fi
-		fi
 	fi
 
-	# Panic if ubuntu mode is unknown (no fstab, no data partition, no ubuntu dir)
-	if [ "$ubuntu_mode" == "unknown" ]; then
-		echo "initrd: Couldn't identify ubuntu boot mode (lack of data/system partition)." >/dev/kmsg || true
-		panic "Couldn't identify ubuntu boot mode (lack of data/system partition). Spawning adbd ..."
-	elif [ "$ubuntu_mode" == "unflipped" ]; then
-		mount --bind /tmpmnt/ubuntu ${rootmnt}
-		mountroot_status="$?"
-	else
-		# Native or flipped modes
-		if [ "$ubuntu_mode" == "native" ]; then
-			parse_initrd_fstab
-		else
-			# Prepare the root filesystem for flipped mode
-			# NOTE: We mount it read-write in all cases, then remount read-only.
-			#       This is to workaround a behaviour change in busybox which now
-			#       uses read-only loops if the fs is initially mounted read-only.
-			#       An alternative implementation would be to add losetup support
-			#       to busybox and do the mount in two steps (rw loop, ro fs).
-			mount -o loop,rw /tmpmnt/system.img ${rootmnt}
-			mount --move /tmpmnt ${rootmnt}/userdata
+	if [ -z "$path" ]; then
+		echo "initrd: Couldn't find data partition. Spawning adbd ..." >/dev/kmsg || true
+		panic "Couldn't find data partition. Spawning adbd ..."
+	fi
+	echo "initrd: mounting $path" >/dev/kmsg || true
 
-			# Mount the android system partition to a temporary location
-			mkdir -p /android-system
-			mount -o loop,ro ${rootmnt}/var/lib/lxc/android/system.img /android-system
+	# Mount the data partition to a temporary mount point
+	mount -o discard $path /tmpmnt
 
-			# Mount some tmpfs
-			echo "initrd: prepare needed tmpfs" >/dev/kmsg || true
-			mkdir -p ${rootmnt}/android
-			mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
-			mount -o rw,nosuid,noexec,relatime,mode=755 -t tmpfs tmpfs ${rootmnt}/run
+	if grep -q systempart= /proc/cmdline; then
+		for x in $(cat /proc/cmdline); do
+			case ${x} in
+			systempart=*)
+				syspart=${x#*=}
+				;;
+			esac
+		done
+	fi
 
-			# Create some needed paths on tmpfs
-			mkdir -p ${rootmnt}/android/data ${rootmnt}/android/system
-
-			# system is a special case
-			echo "initrd: mounting ${rootmnt}/var/lib/lxc/android/system.img as ${rootmnt}/android/system" >/dev/kmsg || true
-			mount --move /android-system ${rootmnt}/android/system
-		fi
-
+	# Loop-mounted flipped model
+	if [ -e /tmpmnt/system.img -o -n "$syspart" ] ; then
 		# Transition .developer_mode to .writable_image
-		[ -e ${rootmnt}/userdata/.developer_mode ] && mv ${rootmnt}/userdata/.developer_mode ${rootmnt}/userdata/.writable_image
+		[ -e /tmpmnt/.developer_mode ] && mv /tmpmnt/.developer_mode /tmpmnt/.writable_image
 
-		if [ -e ${rootmnt}/userdata/.writable_image ]; then
-			# Here we don't need to do anything as initially the image/partition is mounted in rw
-			echo "initrd: mounting system (image developer mode)" >/dev/kmsg || true
+		# Prepare the root filesystem
+		# NOTE: We mount it read-write in all cases, then remount read-only.
+		#       This is to workaround a behaviour change in busybox which now
+		#       uses read-only loops if the fs is initially mounted read-only.
+		#       An alternative implementation would be to add losetup support
+		#       to busybox and do the mount in two steps (rw loop, ro fs).
+		if [ -n "$syspart" ]; then
+			mount -o rw $syspart ${rootmnt}
+		else
+			mount -o loop,rw /tmpmnt/system.img ${rootmnt}
+		fi
+		if [ -e /tmpmnt/.writable_image ]; then
+			echo "initrd: mounting system.img (image developer mode)" >/dev/kmsg || true
 			mountroot_status="$?"
 		else
-			echo "initrd: mounting system (user mode)" >/dev/kmsg || true
+			echo "initrd: mounting system.img (user mode)" >/dev/kmsg || true
 			mount -o remount,ro ${rootmnt}
 			mountroot_status="$?"
 		fi
+		mount --move /tmpmnt ${rootmnt}/userdata
+
+		# Mount the android system partition to a temporary location
+		mkdir -p /android-system
+		mount -o loop,ro ${rootmnt}/var/lib/lxc/android/system.img /android-system
 
 		# Get device information
-		device=$(grep ^ro.product.device= ${rootmnt}/android/system/build.prop |sed -e 's/.*=//')
+		device=$(grep ^ro.product.device= /android-system/build.prop |sed -e 's/.*=//')
 		[ -z "$device" ] && device="unknown"
 		echo "initrd: device is $device" >/dev/kmsg || true
+
+		# Mount some tmpfs
+		mkdir -p ${rootmnt}/android
+		mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
+		mount -o rw,nosuid,noexec,relatime,mode=755 -t tmpfs tmpfs ${rootmnt}/run
+
+		# Create some needed paths on tmpfs
+		mkdir -p ${rootmnt}/android/data ${rootmnt}/android/system
 
 		# Prepare the fstab
 		FSTAB=${rootmnt}/etc/fstab
@@ -282,7 +228,7 @@ mountroot()
 		OLD_CWD=$(pwd)
 		mount -n -t tmpfs tmpfs ${rootmnt}/var/lib/lxc/android/rootfs
 		cd ${rootmnt}/var/lib/lxc/android/rootfs
-		cat ${rootmnt}/android/system/boot/android-ramdisk.img | gzip -d | cpio -i
+		cat /android-system/boot/android-ramdisk.img | gzip -d | cpio -i
 		cd $OLD_CWD
 
 		# Mount all the Android partitions
@@ -315,6 +261,10 @@ mountroot()
 			echo "initrd: mounting $path as ${rootmnt}/android/$2" >/dev/kmsg || true
 			mount $path ${rootmnt}/android/$2 -t $3 -o $4
 		done
+
+		# system is a special case
+		echo "initrd: mounting ${rootmnt}/var/lib/lxc/android/system.img as ${rootmnt}/android/system" >/dev/kmsg || true
+		mount --move /android-system ${rootmnt}/android/system
 
 		# Ubuntu overlay available in the Android system image (hardware specific configs)
 		mount_ubuntu_overlay ${rootmnt}/android/system/ubuntu ${rootmnt}
@@ -349,6 +299,17 @@ mountroot()
 				chown -R $dstown "$user/"
 			fi
 		done
+
+
+	# Old flipped model
+	elif [ -d /tmpmnt/ubuntu ]; then
+		mount --bind /tmpmnt/ubuntu ${rootmnt}
+		mountroot_status="$?"
+
+	# Possibly a re-partitioned device
+	else
+		echo "initrd: Couldn't find a system partition." >/dev/kmsg || true
+		panic "Couldn't find a system partition. Spawning adbd ..."
 	fi
 
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-bottom"

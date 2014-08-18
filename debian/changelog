@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.75) utopic; urgency=medium
+
+  [ Jani Monoses ]
+  * Allow booting Ubuntu from a partition.
+  * Revert the last change. We'll first support a common partition only
+    for Ubuntu, Android system and custom and these changes are not needed.
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Mon, 18 Aug 2014 17:27:55 -0300
+
 initramfs-tools-ubuntu-touch (0.74) utopic; urgency=medium
 
   * Adding support for real partitions, keeping old boot methods
