@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.76) utopic; urgency=medium
+
+  * Adding logic to handle factory mode
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Tue, 09 Sep 2014 00:19:05 -0300
+
 initramfs-tools-ubuntu-touch (0.75) utopic; urgency=medium
 
   [ Jani Monoses ]
