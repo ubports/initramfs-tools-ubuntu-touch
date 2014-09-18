@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.77) utopic; urgency=medium
+
+  * Also booting directly into android when in meta mode (krillin specific at
+    this point, until we abstract this logic in a more generic way).
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Thu, 18 Sep 2014 15:03:38 -0300
+
 initramfs-tools-ubuntu-touch (0.76) utopic; urgency=medium
 
   * Adding logic to handle factory mode
