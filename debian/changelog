@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.78) utopic; urgency=medium
+
+  * Pointing android userdata to /data/android-data so both systems can share
+    the same files (LP: #1368785)
+  * Adding charging mode and low battery charging mode as valid boot modes
+    (LP: #1372373)
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Thu, 25 Sep 2014 17:00:57 -0300
+
 initramfs-tools-ubuntu-touch (0.77) utopic; urgency=medium
 
   * Also booting directly into android when in meta mode (krillin specific at

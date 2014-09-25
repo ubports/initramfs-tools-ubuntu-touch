@@ -21,8 +21,10 @@ identify_boot_mode()
 	if [ -f /sys/class/BOOT/BOOT/boot/boot_mode ]; then
 		boot_reason=`cat /sys/class/BOOT/BOOT/boot/boot_mode`
 		case "${boot_reason}" in
-		1) BOOT_MODE="android" ;;
-		4) BOOT_MODE="android" ;;
+		1) BOOT_MODE="android" ;; # Meta
+		4) BOOT_MODE="android" ;; # Factory
+		8) BOOT_MODE="android" ;; # Power off charging
+		9) BOOT_MODE="android" ;; # Low power charging
 		esac
 	fi
 
@@ -194,12 +196,17 @@ mountroot()
 		echo "initrd: using android ramdisk as rootfs" >/dev/kmsg || true
 		mount --move /android-rootfs ${rootmnt}
 
-		# Mounting userdata and system
+		# Mounting system
 		mount --move /android-system ${rootmnt}/system
-		mkdir -p ${rootmnt}/data
 		mkdir -p ${rootmnt}/ubuntu-system
-		mount --move /tmpmnt ${rootmnt}/data
 		mount --move /ubuntu-system ${rootmnt}/ubuntu-system
+
+		# Mounting userdata
+		mkdir -p ${rootmnt}/data
+		mkdir -p ${rootmnt}/userdata
+		mount --move /tmpmnt ${rootmnt}/userdata
+		mkdir -p ${rootmnt}/userdata/android-data
+		mount -o bind ${rootmnt}/userdata/android-data ${rootmnt}/data
 
 		# Mount all the remaining android partitions
 		mount_android_partitions "${rootmnt}/fstab*" ${rootmnt}
