@@ -13,7 +13,7 @@ export DEBIAN_FRONTEND=noninteractive
 DEB_HOST_MULTIARCH=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 # list all packages needed for a generic ubuntu touch initrd here
-INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-tools-adbd"
+INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-tools-adbd e2fsprogs"
 
 MIRROR=$(grep "^deb " /etc/apt/sources.list|head -1|cut -d' ' -f2)
 RELEASE=$(lsb_release -cs)

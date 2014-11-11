@@ -155,6 +155,18 @@ mountroot()
 		echo "initrd: Couldn't find data partition. Spawning adbd ..." >/dev/kmsg || true
 		panic "Couldn't find data partition. Spawning adbd ..."
 	fi
+
+	echo "initrd: checking filesystem integrity for the userdata partition" >/dev/kmsg || true
+	# Mounting and umounting first, let the kernel handle the journal and
+	# orphaned inodes (faster than e2fsck). Then, just run e2fsck forcing -y.
+	# Also check the amount of time used by to check the filesystem.
+	fsck_start=`date +%s`
+	mount -o errors=remount-ro $path /tmpmnt
+	umount /tmpmnt
+	e2fsck -y $path > /run/initramfs/e2fsck.out 2>&1
+	fsck_end=`date +%s`
+	echo "initrd: checking filesystem for userdata took (including e2fsck) $((fsck_end-fsck_start)) seconds" >/dev/kmsg || true
+
 	echo "initrd: mounting $path" >/dev/kmsg || true
 
 	# Mount the data partition to a temporary mount point

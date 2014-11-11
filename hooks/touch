@@ -23,6 +23,7 @@ esac
 # reboot and adbd
 copy_exec /sbin/swapon /sbin
 copy_exec /sbin/reboot /sbin
+copy_exec /sbin/e2fsck /sbin
 copy_exec /bin/chown /bin
 copy_exec /bin/readlink /sbin
 copy_exec /usr/bin/adbd /sbin

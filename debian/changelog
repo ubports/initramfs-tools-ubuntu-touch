@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.79) vivid; urgency=medium
+
+  * Adding e2fsck so we can check the rw partitions when booting
+  * scripts/touch: adding logic to check the filesystem for userdata (rw)
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Tue, 11 Nov 2014 00:39:22 -0200
+
 initramfs-tools-ubuntu-touch (0.78) utopic; urgency=medium
 
   * Pointing android userdata to /data/android-data so both systems can share
