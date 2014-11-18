@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.80) vivid; urgency=medium
+
+  * scripts/touch: mounting userdata with data=journal as a workaround
+    for bug LP: #1387214
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Tue, 18 Nov 2014 15:33:16 -0200
+
 initramfs-tools-ubuntu-touch (0.79) vivid; urgency=medium
 
   * Adding e2fsck so we can check the rw partitions when booting
