@@ -31,6 +31,51 @@ identify_boot_mode()
 	echo "initrd: boot mode: $BOOT_MODE" >/dev/kmsg || true
 }
 
+set_ubuntu_version_properties() {
+	ubuntu_system=$1
+	android_data=$2
+
+	channel_ini=$1/etc/system-image/channel.ini
+	def_language=$1/custom/default_language
+
+	ubuntu="unknown"
+	device="unknown"
+	custom="unknown"
+	version="unknown"
+	def_lang="unknown"
+
+	if [ -f "$channel_ini" ]; then
+		IFS=','
+		for i in `grep version_detail $channel_ini | awk -F ' ' '{print $2}'`; do
+			id=${i%=*}
+			case $id in
+				ubuntu) ubuntu=${i#ubuntu=} ;;
+				device) device=${i#device=} ;;
+				custom) custom=${i#custom=} ;;
+				version) version=${i#version=} ;;
+			esac
+		done
+		unset IFS
+	fi
+
+	if [ -f "$def_language" ]; then
+		lang=`cat $def_language`
+		if [ -n "$lang" ]; then
+			def_lang=$lang
+		fi
+	fi
+
+	# Write down so the android property system can load them automatically
+	mkdir -p $android_data/property
+	chmod 700 $android_data/property
+	echo -n "$ubuntu" > $android_data/property/persist.ubuntu.version.rootfs
+	echo -n "$device" > $android_data/property/persist.ubuntu.version.device
+	echo -n "$custom" > $android_data/property/persist.ubuntu.version.custom
+	echo -n "$version" > $android_data/property/persist.ubuntu.version
+	echo -n "$def_lang" > $android_data/property/persist.ubuntu.default_language
+	chmod 600 $android_data/property/persist.ubuntu*
+}
+
 mount_android_partitions() {
 	fstab=$1
 	mount_root=$2
@@ -221,6 +266,9 @@ mountroot()
 		mkdir -p ${rootmnt}/userdata/android-data
 		mount -o bind ${rootmnt}/userdata/android-data ${rootmnt}/data
 
+		# Set ubuntu version properties
+		set_ubuntu_version_properties ${rootmnt}/ubuntu-system ${rootmnt}/data
+
 		# Mount all the remaining android partitions
 		mount_android_partitions "${rootmnt}/fstab*" ${rootmnt}
 
@@ -253,6 +301,10 @@ mountroot()
 			mountroot_status="$?"
 		fi
 		mount --move /tmpmnt ${rootmnt}/userdata
+
+		# Set ubuntu version properties
+		mkdir -p ${rootmnt}/userdata/android-data
+		set_ubuntu_version_properties ${rootmnt} ${rootmnt}/userdata/android-data
 
 		# Mount the android system partition to a temporary location
 		mkdir -p /android-system
