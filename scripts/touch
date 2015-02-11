@@ -42,6 +42,7 @@ set_ubuntu_version_properties() {
 	device="unknown"
 	custom="unknown"
 	version="unknown"
+	channel="unknown"
 	def_lang="unknown"
 
 	if [ -f "$channel_ini" ]; then
@@ -56,6 +57,7 @@ set_ubuntu_version_properties() {
 			esac
 		done
 		unset IFS
+		channel=`grep channel $channel_ini | awk -F ' ' '{print $2}'`
 	fi
 
 	if [ -f "$def_language" ]; then
@@ -71,6 +73,7 @@ set_ubuntu_version_properties() {
 	echo -n "$ubuntu" > $android_data/property/persist.ubuntu.version.rootfs
 	echo -n "$device" > $android_data/property/persist.ubuntu.version.device
 	echo -n "$custom" > $android_data/property/persist.ubuntu.version.custom
+	echo -n "$channel" > $android_data/property/persist.ubuntu.version.channel
 	echo -n "$version" > $android_data/property/persist.ubuntu.version
 	echo -n "$def_lang" > $android_data/property/persist.ubuntu.default_language
 	chmod 600 $android_data/property/persist.ubuntu*

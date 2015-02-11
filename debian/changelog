@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.82) vivid; urgency=medium
+
+  * scripts/touch: adding extra property for the channel id (LP: #1420242)
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Wed, 11 Feb 2015 10:28:21 -0200
+
 initramfs-tools-ubuntu-touch (0.81) vivid; urgency=medium
 
   * scripts/touch: adding logic to set properties based on the system
