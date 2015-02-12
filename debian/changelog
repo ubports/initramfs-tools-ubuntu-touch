@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.83) vivid; urgency=medium
+
+  * Bumping against latest initramfs-tools
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Thu, 12 Feb 2015 10:41:00 -0200
+
 initramfs-tools-ubuntu-touch (0.82) vivid; urgency=medium
 
   * scripts/touch: adding extra property for the channel id (LP: #1420242)
