@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -ex
 
 
 if [ -z "$FAKEROOTKEY" ]; then
@@ -21,7 +21,7 @@ ROOT=./build
 
 # create a plain chroot to work in
 rm -rf $ROOT
-fakechroot debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR
+fakechroot debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
 
 # TODO this can be dropped once all packages are in main
 sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
@@ -43,6 +43,10 @@ exit 101
 EOF
 chmod a+rx $ROOT/usr/sbin/policy-rc.d
 
+# after teh switch to systemd we now need to install upstart explicitly
+fakechroot chroot $ROOT apt-get -y update
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y install upstart
+
 mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
 cat > $ROOT/sbin/initctl <<EOF
 #!/bin/sh
@@ -53,7 +57,6 @@ EOF
 chmod a+rx $ROOT/sbin/initctl
 
 # install all packages we need to roll the generic initrd
-fakechroot chroot $ROOT apt-get -y update
 fakechroot -c fakechroot-config chroot $ROOT apt-get -y install $INCHROOTPKGS
 
 cp -a conf/touch ${ROOT}/usr/share/initramfs-tools/conf.d

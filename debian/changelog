@@ -1,3 +1,12 @@
+initramfs-tools-ubuntu-touch (0.85) vivid; urgency=medium
+
+  * add more verbosity to teh build script and dump the debootstrap.log file
+    into the buildd log
+  * force installing of upstart since we need to do this explicitly in
+    the new systemd world.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 11 Mar 2015 16:19:03 +0100
+
 initramfs-tools-ubuntu-touch (0.84) vivid; urgency=medium
 
   * Bumping against latest initramfs-tools
