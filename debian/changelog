@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.86) vivid; urgency=medium
+
+  * force usage of the fakechroot-config in deboostrap so we explicitly
+    override chfn
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Wed, 11 Mar 2015 16:40:23 +0100
+
 initramfs-tools-ubuntu-touch (0.85) vivid; urgency=medium
 
   * add more verbosity to teh build script and dump the debootstrap.log file

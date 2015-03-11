@@ -21,7 +21,7 @@ ROOT=./build
 
 # create a plain chroot to work in
 rm -rf $ROOT
-fakechroot debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
+fakechroot -c fakechroot-config debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
 
 # TODO this can be dropped once all packages are in main
 sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
