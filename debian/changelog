@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.88) vivid; urgency=medium
+
+  * scripts/touch: allow the fstab to use an entry without label
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Fri, 20 Mar 2015 02:30:21 -0300
+
 initramfs-tools-ubuntu-touch (0.87) vivid; urgency=medium
 
   * and actually add a debootstrap.env confiuration in the fakechroot-config

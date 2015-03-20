@@ -98,15 +98,14 @@ mount_android_partitions() {
 
 		echo "initrd: checking mount label $label" >/dev/kmsg || true
 
+		# In case fstab provides /dev/mmcblk0p* lines
+		path="/dev/$label"
 		for dir in by-partlabel by-name by-label by-path by-uuid by-partuuid by-id; do
-			path="/dev/disk/$dir/$label"
-			[ -e "$path" ] && break
+			if [ -e "/dev/disk/$dir/$label" ]; then
+				path="/dev/disk/$dir/$label"
+				break
+			fi
 		done
-
-		# MTD based devices, such as the emulator
-		if [ ! -e "$path" ] && echo $label | egrep -q "^mtdblock"; then
-			path="/dev/$label"
-		fi
 
 		[ ! -e "$path" ] && continue
 
