@@ -1,3 +1,11 @@
+initramfs-tools-ubuntu-touch (0.89) vivid; urgency=medium
+
+  * try using -s for fakechroot command to overcome a chroot error during
+    build in case the libc version in -proposed is newer than in the
+    deboostrapped chroot.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 20 Mar 2015 15:20:52 +0100
+
 initramfs-tools-ubuntu-touch (0.88) vivid; urgency=medium
 
   * scripts/touch: allow the fstab to use an entry without label
