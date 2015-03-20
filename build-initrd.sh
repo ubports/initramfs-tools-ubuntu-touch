@@ -44,8 +44,8 @@ EOF
 chmod a+rx $ROOT/usr/sbin/policy-rc.d
 
 # after teh switch to systemd we now need to install upstart explicitly
-fakechroot -s chroot $ROOT apt-get -y update
-fakechroot -s -c fakechroot-config chroot $ROOT apt-get -y install upstart
+fakechroot chroot $ROOT apt-get -y update
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y install upstart
 
 mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
 cat > $ROOT/sbin/initctl <<EOF
@@ -57,7 +57,7 @@ EOF
 chmod a+rx $ROOT/sbin/initctl
 
 # install all packages we need to roll the generic initrd
-fakechroot -s -c fakechroot-config chroot $ROOT apt-get -y install $INCHROOTPKGS
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y install $INCHROOTPKGS
 
 cp -a conf/touch ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
@@ -74,7 +74,7 @@ mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot
 touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot/libfakechroot.so
 touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
 
-fakechroot -s chroot $ROOT update-initramfs -c -ktouch-$VER -v
+fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
 
 # make a more generically named link so external scripts can use the file without parsing the version
 cd $ROOT/boot
@@ -82,4 +82,4 @@ ln -s initrd.img-touch-$VER initrd.img-touch
 cd - >/dev/null 2>&1
 
 # put a fake sha1sum file in place so update-initramfs -u works OOTB for developers
-fakechroot -s chroot $ROOT sha1sum /boot/initrd.img-touch >$ROOT/var/lib/initramfs-tools/touch
+fakechroot chroot $ROOT sha1sum /boot/initrd.img-touch >$ROOT/var/lib/initramfs-tools/touch

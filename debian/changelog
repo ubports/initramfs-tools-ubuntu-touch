@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.90) vivid; urgency=medium
+
+  * last change did sadly not help, revert again ...
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 20 Mar 2015 15:32:06 +0100
+
 initramfs-tools-ubuntu-touch (0.89) vivid; urgency=medium
 
   * try using -s for fakechroot command to overcome a chroot error during
