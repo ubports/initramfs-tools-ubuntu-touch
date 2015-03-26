@@ -1,3 +1,10 @@
+initramfs-tools-ubuntu-touch (0.91) vivid; urgency=medium
+
+  * Adding mount binary, so it can better understand the original fstab
+    from Android
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Thu, 26 Mar 2015 17:36:51 -0300
+
 initramfs-tools-ubuntu-touch (0.90) vivid; urgency=medium
 
   * last change did sadly not help, revert again ...

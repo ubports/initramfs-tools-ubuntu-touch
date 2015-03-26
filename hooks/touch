@@ -1,6 +1,4 @@
 #!/bin/sh -e
-# initramfs hook for fixing broken rtc clock
-# without battery
 
 MINKVER="2.6.24"
 PREREQ=""
@@ -20,11 +18,11 @@ esac
 
 . /usr/share/initramfs-tools/hook-functions
 
-# reboot and adbd
 copy_exec /sbin/swapon /sbin
 copy_exec /sbin/reboot /sbin
 copy_exec /sbin/e2fsck /sbin
 copy_exec /bin/chown /bin
+copy_exec /bin/mount /bin
 copy_exec /bin/readlink /sbin
 copy_exec /usr/bin/adbd /sbin
 copy_exec /lib/#DEB_HOST_MULTIARCH#/libz.so.1
