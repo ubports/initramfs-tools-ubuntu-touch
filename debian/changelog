@@ -1,3 +1,11 @@
+initramfs-tools-ubuntu-touch (0.92) vivid; urgency=medium
+
+  * add support for adding a "#endubuntu" line to androids fstab, that way
+    porters can put partitions they want to prevent from being mounted via
+    ubuntu underneath this point and only android will care for mounting them.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 09 Apr 2015 17:24:55 +0200
+
 initramfs-tools-ubuntu-touch (0.91) vivid; urgency=medium
 
   * Adding mount binary, so it can better understand the original fstab
