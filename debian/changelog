@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.93) vivid; urgency=medium
+
+  * no-change rebuild to pick up new initramfs-tools (LP: #1443329)
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Mon, 13 Apr 2015 15:38:21 +0200
+
 initramfs-tools-ubuntu-touch (0.92) vivid; urgency=medium
 
   * add support for adding a "#endubuntu" line to androids fstab, that way
