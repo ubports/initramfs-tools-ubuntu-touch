@@ -313,7 +313,11 @@ mountroot()
 
 		# Mount the android system partition to a temporary location
 		mkdir -p /android-system
-		mount -o loop,ro ${rootmnt}/var/lib/lxc/android/system.img /android-system
+
+		MOUNT="ro"
+		[ -e ${rootmnt}/userdata/.writable_device_image -a -e ${rootmnt}/userdata/.writable_image ] && MOUNT="rw"
+		echo "initrd: mounting device image as $MOUNT" >/dev/kmsg || true
+		mount -o loop,$MOUNT ${rootmnt}/var/lib/lxc/android/system.img /android-system
 
 		# Get device information
 		device=$(grep ^ro.product.device= /android-system/build.prop |sed -e 's/.*=//')
