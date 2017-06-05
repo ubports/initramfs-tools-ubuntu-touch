@@ -264,15 +264,19 @@ mountroot()
 
 	identify_boot_mode
 
-	# Only care about factory mode when using a real partition
-	if [ -n "$syspart" ] && [ "$BOOT_MODE" = "android" ]; then
-		# Factory mode, just boot directly into the android rootfs
+	# Real partition or image, we both need charger mode.....
+	if ( [ -e /tmpmnt/system.img ] || [ -n "$syspart" ] ) && [ "$BOOT_MODE" = "android" ]; then
+		# Factory/charger mode, just boot directly into the android rootfs
 		mkdir -p /ubuntu-system
 		mkdir -p /android-rootfs
 		mkdir -p /android-system
 
 		echo "initrd: mounting ubuntu system partition" >/dev/kmsg || true
-		mount -o rw $syspart /ubuntu-system
+		if [ -n "$syspart" ]; then
+			mount -o rw $syspart /ubuntu-system
+		else
+			mount -o loop,rw /tmpmnt/system.img /ubuntu-system
+		fi
 		mount -o remount,ro /ubuntu-system
 
 		echo "initrd: mounting android system image" >/dev/kmsg || true

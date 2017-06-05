@@ -1,3 +1,9 @@
+initramfs-tools-ubuntu-touch (0.94vivid5ubports1) UNRELEASED; urgency=medium
+
+  * Add support for using Android initrd in image rootfs.
+
+ -- Ratchanan Srirattanamet <peathot@hotmail.com>  Tue, 06 Jun 2017 00:03:38 +0700
+
 initramfs-tools-ubuntu-touch (0.94vivid5) vivid; urgency=medium
 
   * fix handling of $path if it doesn not point to a raw /dev/mmcblkNpN but to
