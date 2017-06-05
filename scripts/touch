@@ -163,6 +163,33 @@ sync_dirs() {
 	cd $OLD_PWD
 }
 
+resize_userdata_if_needed() {
+
+	# See if the filesystem on the userdata partition needs resizing (usually on first boot).
+	# If the difference between the partition size and the filesystem size is above a small
+	# threshold, assume it needs resizing to fill the partition.
+
+	path=$1
+
+	# Partition size in 1k blocks
+	case $path in
+	    /dev/mmcblk*)
+	        pblocks=$(grep ${path#/dev/*} /proc/partitions | awk {'print $3'})
+	        ;;
+	    /dev/disk*)
+	        pblocks=$(grep $(basename $(readlink $path)) /proc/partitions | awk {'print $3'})
+	        ;;
+	esac
+	# Filesystem size in 4k blocks
+	fsblocks=$(dumpe2fs -h $path | grep "Block count" | awk {'print $3'})
+	# Difference between the reported sizes in 1k blocks
+	dblocks=$(($pblocks-4*$fsblocks))
+	if [ $dblocks -gt 10000 ];then
+		resize2fs -f $path
+		echo "initrd: resized userdata filesystem to fill $path" >/dev/kmsg || true
+	fi
+}
+
 mountroot()
 {
 	# list of possible userdata partition names
@@ -216,6 +243,8 @@ mountroot()
 	e2fsck -y $path > /run/initramfs/e2fsck.out 2>&1
 	fsck_end=`date +%s`
 	echo "initrd: checking filesystem for userdata took (including e2fsck) $((fsck_end-fsck_start)) seconds" >/dev/kmsg || true
+
+	resize_userdata_if_needed ${path}
 
 	echo "initrd: mounting $path" >/dev/kmsg || true
 

@@ -1,3 +1,37 @@
+initramfs-tools-ubuntu-touch (0.94vivid5) vivid; urgency=medium
+
+  * fix handling of $path if it doesn not point to a raw /dev/mmcblkNpN but to
+    /dev/disk/by-partlabel/* instead.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Fri, 01 May 2015 22:20:51 +0200
+
+initramfs-tools-ubuntu-touch (0.94vivid4) vivid; urgency=medium
+
+  * add support for resizing the userdata partition content, if the
+    filesystem is not yet filling the whole partition.
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 30 Apr 2015 17:21:18 +0200
+
+initramfs-tools-ubuntu-touch (0.94vivid3) vivid; urgency=medium
+
+  * fix typo
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 23 Apr 2015 20:19:55 +0200
+
+initramfs-tools-ubuntu-touch (0.94vivid2) vivid; urgency=medium
+
+  * exclude PPAs when looking for a proper value for MIRROR in sources.list
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 23 Apr 2015 19:45:17 +0200
+
+initramfs-tools-ubuntu-touch (0.94vivid1) vivid; urgency=medium
+
+  * add /sbin/resize2fs to hooks/touch so the binary is available in the
+    initrd for consumption.
+    Thanks to Jani Monoses <jani.monoses@canonical.com>
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Thu, 23 Apr 2015 18:40:38 +0200
+
 initramfs-tools-ubuntu-touch (0.94) vivid; urgency=medium
 
   * enable support for /userdata/.writable_device_image, thanks to
