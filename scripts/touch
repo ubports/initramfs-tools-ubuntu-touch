@@ -14,7 +14,21 @@ identify_boot_mode()
 	BOOT_MODE='ubuntu'
 
 	# The boot reason is exported via /proc/cmdline
-	## Some devices are using 'bootreason', others 'boot_reason'
+	# The standard method is using androidboot.mode parameter.
+
+	for x in $(cat /proc/cmdline); do
+		case ${x} in
+		androidboot.mode=*)
+			android_bootmode=${x#*=}
+			;;
+		esac
+	done
+
+	if echo "$android_bootmode" | grep charger; then
+		BOOT_MODE="android"
+	fi
+
+	## Some devices may be using 'bootreason', others 'boot_reason'
 	## XXX: Find a better way to handle device specifics here
 
 	# Krillin

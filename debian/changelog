@@ -1,6 +1,7 @@
 initramfs-tools-ubuntu-touch (0.94vivid5ubports1) UNRELEASED; urgency=medium
 
   * Add support for using Android initrd in image rootfs.
+  * Add charger bootmode detection logic.
 
  -- Ratchanan Srirattanamet <peathot@hotmail.com>  Tue, 06 Jun 2017 00:03:38 +0700
 
