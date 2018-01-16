@@ -24,7 +24,6 @@ copy_exec /sbin/e2fsck /sbin
 copy_exec /bin/chown /bin
 copy_exec /bin/mount /bin
 copy_exec /bin/readlink /sbin
-copy_exec /usr/bin/adbd /sbin
 copy_exec /lib/#DEB_HOST_MULTIARCH#/libz.so.1
 copy_exec /lib/#DEB_HOST_MULTIARCH#/libcrypto.so.1.0.0
 copy_exec /lib/#DEB_HOST_MULTIARCH#/libdl.so.2

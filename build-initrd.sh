@@ -4,11 +4,13 @@ set -e
 
 export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
+DEFAULTMIRROR="http://ports.ubuntu.com/ubuntu-ports"
 
 usage() {
 	echo "Usage:
 
 -a|--arch	Architecture to create initrd for. Default armhf
+-m|--mirror	Custom mirror URL to use. Must serve your arch.
 "
 }
 
@@ -23,21 +25,23 @@ while [ $# -gt 0 ]; do
 			exit 0
 			;;
 		-a|--arch)
-			[ -n "$2" ] && ARCH=$2 shift
+			[ -n "$2" ] && ARCH=$2 shift || usage
 			;;
+		-m|--mirror)
+			[ -n "$2" ] && MIRROR=$2 shift || usage
 	esac
 	shift
 done
 
+# Defaults for all arguments, so they can be set by the environment
 [ -z $ARCH ] && ARCH="armhf"
-
-MIRROR="http://ports.ubuntu.com/ubuntu-ports"
-RELEASE="xenial"
-ROOT=./build/$ARCH
-OUT=./out
+[ -z $MIRROR ] && MIRROR=$DEFAULTMIRROR
+[ -z $RELEASE ] && RELEASE="xenial"
+[ -z $ROOT ] && ROOT=./build/$ARCH
+[ -z $OUT ] && OUT=./out
 
 # list all packages needed for halium's initrd here
-INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-tools-adbd e2fsprogs"
+[ -z $INCHROOTPKGS ] && INCHROOTPKGS="initramfs-tools dctrl-tools e2fsprogs libc6-dev zlib1g-dev libssl-dev"
 
 
 BOOTSTRAP_BIN="qemu-debootstrap --arch $ARCH --variant=minbase"
@@ -90,10 +94,11 @@ if [ ! -e $ROOT/.min-done ]; then
 
 	# create a plain chroot to work in
 	echob "Creating chroot with arch $ARCH in $ROOT"
-	mkdir build
+	mkdir build ||true
 	$BOOTSTRAP_BIN $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
 
 	sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
+	sed -i 's,'"$DEFAULTMIRROR"','"$MIRROR"',' $ROOT/etc/apt/sources.list
 
 	# make sure we do not start daemons at install time
 	mv $ROOT/sbin/start-stop-daemon $ROOT/sbin/start-stop-daemon.REAL
@@ -105,14 +110,14 @@ if [ ! -e $ROOT/.min-done ]; then
 	# after the switch to systemd we now need to install upstart explicitly
 	echo "nameserver 8.8.8.8" >$ROOT/etc/resolv.conf
 	do_chroot $ROOT "apt-get -y update"
-	do_chroot $ROOT "apt-get -y install upstart --no-install-recommends"
+	#do_chroot $ROOT "apt-get -y install upstart --no-install-recommends"
 
 	# We also need to install dpkg-dev in order to use dpkg-architecture.
 	do_chroot $ROOT "apt-get -y install dpkg-dev --no-install-recommends"
 
-	mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
-	echo $INITCTL > $ROOT/sbin/initctl
-	chmod a+rx $ROOT/sbin/initctl
+	# mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
+	# echo $INITCTL > $ROOT/sbin/initctl
+	# chmod a+rx $ROOT/sbin/initctl
 
 	touch $ROOT/.min-done
 else
@@ -130,7 +135,7 @@ cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/* ${ROOT}/usr/share/initramfs-tools/hooks
 sed -i -e "s/#DEB_HOST_MULTIARCH#/$DEB_HOST_MULTIARCH/g" ${ROOT}/usr/share/initramfs-tools/hooks/touch
 
-VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
+VER="$ARCH"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
 
 ## Temporary HACK to work around FTBFS
@@ -142,9 +147,7 @@ touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
 
 do_chroot $ROOT "update-initramfs -c -ktouch-$VER -v"
 
-rm -r $OUT 2>/dev/null || true
-mkdir $OUT
+mkdir $OUT >/dev/null 2>&1 || true
 cp $ROOT/boot/initrd.img-touch-$VER $OUT
 cd $OUT
-ln -s initrd.img-touch-$VER initrd.img-touch
 cd - >/dev/null 2>&1
