@@ -9,7 +9,7 @@ case $1 in
 # get pre-requisites
 prereqs)
 	prereqs
-	#exit 0
+	exit 0
 	;;
 esac
 
