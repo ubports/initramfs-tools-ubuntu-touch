@@ -6,26 +6,30 @@ export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
 
 usage() {
-	echo "Hi"
+	echo "Usage:
+
+-a|--arch	Architecture to create initrd for. Default armhf
+"
+}
+
+echob() {
+	echo "Builder: $@"
 }
 
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-h|--help)
 			usage
+			exit 0
 			;;
 		-a|--arch)
-			[ -n "$2" ] && ARCH=$2 shift || usage
+			[ -n "$2" ] && ARCH=$2 shift
 			;;
 	esac
 	shift
 done
 
-if [ -z $ARCH ]; then
-	echo "Error: No architecture specified."
-	usage
-	exit 1
-fi
+[ -z $ARCH ] && ARCH="armhf"
 
 MIRROR="http://ports.ubuntu.com/ubuntu-ports"
 RELEASE="xenial"
@@ -38,21 +42,25 @@ INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-to
 
 BOOTSTRAP_BIN="qemu-debootstrap --arch $ARCH --variant=minbase"
 
-do_chroot()
-{
-	STOP=false
+umount_chroot() {
+	chroot $ROOT umount /sys >/dev/null 2>&1 || true
+	chroot $ROOT umount /proc >/dev/null 2>&1 || true
+	echo
+}
+
+do_chroot() {
+	trap umount_chroot INT EXIT
 	ROOT="$1"
 	CMD="$2"
-	echo "+ Executing \"$2\" in chroot"
+	echob "Executing \"$2\" in chroot" 
 	chroot $ROOT mount -t proc proc /proc
 	chroot $ROOT mount -t sysfs sys /sys
-	chroot $ROOT $CMD || STOP=true
-	chroot $ROOT umount /sys
-	chroot $ROOT umount /proc
-	if [ "$STOP" = true ]; then
-		exit 1
-	fi
+	chroot $ROOT $CMD
+	umount_chroot
+	trap - INT EXIT
 }
+
+# Constants
 
 START_STOP_DAEMON=`cat <<EOF
 #!/bin/sh
@@ -78,9 +86,11 @@ EOF
 
 if [ ! -e $ROOT/.min-done ]; then
 
+	[ -d $ROOT ] && rm -r $ROOT
+
 	# create a plain chroot to work in
-	echo "Creating chroot with arch $ARCH in $ROOT"
-	mkdir $ROOT -p
+	echob "Creating chroot with arch $ARCH in $ROOT"
+	mkdir build
 	$BOOTSTRAP_BIN $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
 
 	sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
@@ -105,7 +115,8 @@ if [ ! -e $ROOT/.min-done ]; then
 	chmod a+rx $ROOT/sbin/initctl
 
 	touch $ROOT/.min-done
-
+else
+	echob "Build environment for $ARCH found, reusing."
 fi
 
 # install all packages we need to roll the generic initrd
@@ -131,7 +142,7 @@ touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
 
 do_chroot $ROOT "update-initramfs -c -ktouch-$VER -v"
 
-rm -r $OUT || true
+rm -r $OUT 2>/dev/null || true
 mkdir $OUT
 cp $ROOT/boot/initrd.img-touch-$VER $OUT
 cd $OUT
