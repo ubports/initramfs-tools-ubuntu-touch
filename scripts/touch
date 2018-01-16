@@ -14,21 +14,7 @@ identify_boot_mode()
 	BOOT_MODE='ubuntu'
 
 	# The boot reason is exported via /proc/cmdline
-	# The standard method is using androidboot.mode parameter.
-
-	for x in $(cat /proc/cmdline); do
-		case ${x} in
-		androidboot.mode=*)
-			android_bootmode=${x#*=}
-			;;
-		esac
-	done
-
-	if echo "$android_bootmode" | grep charger; then
-		BOOT_MODE="android"
-	fi
-
-	## Some devices may be using 'bootreason', others 'boot_reason'
+	## Some devices are using 'bootreason', others 'boot_reason'
 	## XXX: Find a better way to handle device specifics here
 
 	# Krillin
@@ -177,33 +163,6 @@ sync_dirs() {
 	cd $OLD_PWD
 }
 
-resize_userdata_if_needed() {
-
-	# See if the filesystem on the userdata partition needs resizing (usually on first boot).
-	# If the difference between the partition size and the filesystem size is above a small
-	# threshold, assume it needs resizing to fill the partition.
-
-	path=$1
-
-	# Partition size in 1k blocks
-	case $path in
-	    /dev/mmcblk*)
-	        pblocks=$(grep ${path#/dev/*} /proc/partitions | awk {'print $3'})
-	        ;;
-	    /dev/disk*)
-	        pblocks=$(grep $(basename $(readlink $path)) /proc/partitions | awk {'print $3'})
-	        ;;
-	esac
-	# Filesystem size in 4k blocks
-	fsblocks=$(dumpe2fs -h $path | grep "Block count" | awk {'print $3'})
-	# Difference between the reported sizes in 1k blocks
-	dblocks=$(($pblocks-4*$fsblocks))
-	if [ $dblocks -gt 10000 ];then
-		resize2fs -f $path
-		echo "initrd: resized userdata filesystem to fill $path" >/dev/kmsg || true
-	fi
-}
-
 mountroot()
 {
 	# list of possible userdata partition names
@@ -258,8 +217,6 @@ mountroot()
 	fsck_end=`date +%s`
 	echo "initrd: checking filesystem for userdata took (including e2fsck) $((fsck_end-fsck_start)) seconds" >/dev/kmsg || true
 
-	resize_userdata_if_needed ${path}
-
 	echo "initrd: mounting $path" >/dev/kmsg || true
 
 	# Mount the data partition to a temporary mount point
@@ -278,19 +235,15 @@ mountroot()
 
 	identify_boot_mode
 
-	# Real partition or image, we both need charger mode.....
-	if ( [ -e /tmpmnt/system.img ] || [ -n "$syspart" ] ) && [ "$BOOT_MODE" = "android" ]; then
-		# Factory/charger mode, just boot directly into the android rootfs
+	# Only care about factory mode when using a real partition
+	if [ -n "$syspart" ] && [ "$BOOT_MODE" = "android" ]; then
+		# Factory mode, just boot directly into the android rootfs
 		mkdir -p /ubuntu-system
 		mkdir -p /android-rootfs
 		mkdir -p /android-system
 
 		echo "initrd: mounting ubuntu system partition" >/dev/kmsg || true
-		if [ -n "$syspart" ]; then
-			mount -o rw $syspart /ubuntu-system
-		else
-			mount -o loop,rw /tmpmnt/system.img /ubuntu-system
-		fi
+		mount -o rw $syspart /ubuntu-system
 		mount -o remount,ro /ubuntu-system
 
 		echo "initrd: mounting android system image" >/dev/kmsg || true

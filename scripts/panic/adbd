@@ -19,8 +19,13 @@ echo "initrd: enabling USB debugging" >/dev/kmsg || true
 path="/sys/class/android_usb/android0"
 panicpath="/sys/module/kernel/parameters/panic"
 
+# Next 3 lines are needed for Android >= lollipop
+mkdir -p /dev/usb-ffs/adb || true
+mount -t functionfs adb /dev/usb-ffs/adb || true
+echo adb >$path/f_ffs/aliases || true
+
 echo 18d1 >$path/idVendor || true
-echo D002 >$path/idProduct || true
+echo d002 >$path/idProduct || true
 echo adb >$path/functions || true
 echo 1 >$path/enable || true
 
