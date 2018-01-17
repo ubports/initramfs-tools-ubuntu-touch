@@ -16,7 +16,7 @@ esac
 USB_FUNCTIONS=rndis
 ANDROID_USB=/sys/class/android_usb/android0
 LOCAL_IP=192.168.2.15
-EXPLICIT_BUSYBOX=""
+EXPLICIT_BUSYBOX="/bin/busybox"
 TELNET_DEBUG_PORT=23
 
 write() {

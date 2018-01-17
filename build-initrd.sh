@@ -4,7 +4,7 @@ set -e
 
 export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
-DEFAULTMIRROR="http://ports.ubuntu.com/ubuntu-ports"
+DEFAULTMIRROR="http://ftp.debian.org/debian"
 
 usage() {
 	echo "Usage:
@@ -36,12 +36,12 @@ done
 # Defaults for all arguments, so they can be set by the environment
 [ -z $ARCH ] && ARCH="armhf"
 [ -z $MIRROR ] && MIRROR=$DEFAULTMIRROR
-[ -z $RELEASE ] && RELEASE="xenial"
+[ -z $RELEASE ] && RELEASE="stable"
 [ -z $ROOT ] && ROOT=./build/$ARCH
 [ -z $OUT ] && OUT=./out
 
 # list all packages needed for halium's initrd here
-[ -z $INCHROOTPKGS ] && INCHROOTPKGS="initramfs-tools dctrl-tools e2fsprogs libc6-dev zlib1g-dev libssl-dev"
+[ -z $INCHROOTPKGS ] && INCHROOTPKGS="initramfs-tools dctrl-tools e2fsprogs libc6-dev zlib1g-dev libssl-dev busybox-static"
 
 
 BOOTSTRAP_BIN="qemu-debootstrap --arch $ARCH --variant=minbase"
@@ -97,7 +97,7 @@ if [ ! -e $ROOT/.min-done ]; then
 	mkdir build ||true
 	$BOOTSTRAP_BIN $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
 
-	sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
+	#sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
 	sed -i 's,'"$DEFAULTMIRROR"','"$MIRROR"',' $ROOT/etc/apt/sources.list
 
 	# make sure we do not start daemons at install time
@@ -139,13 +139,13 @@ VER="$ARCH"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
 
 ## Temporary HACK to work around FTBFS
-mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot
-mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot
+# mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot
+# mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot
 
-touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot/libfakechroot.so
-touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
+# touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot/libfakechroot.so
+# touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
 
-do_chroot $ROOT "update-initramfs -c -ktouch-$VER -v"
+do_chroot $ROOT "update-initramfs -tc -ktouch-$VER -v"
 
 mkdir $OUT >/dev/null 2>&1 || true
 cp $ROOT/boot/initrd.img-touch-$VER $OUT
