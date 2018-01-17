@@ -11,20 +11,6 @@ tell_kmsg() {
 	echo "initrd: $1" >/dev/kmsg || true
 }
 
-create_by_name_mountpoints() {
-    mkdir -p /dev/block/bootdevice/by-name/
-    for dev in $@;
-    do
-        DEVICE=$(echo $dev | sed "s|/dev/||")
-        UEVENT=$(cat /sys/class/block/${DEVICE}/uevent)
-        PARTNAME=$(echo "$UEVENT" | grep "PARTNAME=" | sed "s/PARTNAME=//")
-        MAJOR=$(echo "$UEVENT" | grep "MAJOR=" | sed "s/MAJOR=//")
-        MINOR=$(echo "$UEVENT" | grep "MINOR=" | sed "s/MINOR=//")
-        # create a block device
-        mknod /dev/block/bootdevice/by-name/$PARTNAME b $MAJOR $MINOR
-    done
-}
-
 identify_boot_mode() {
 	# Our current list of supported boot modes:
 	## BOOT_MODE = ubuntu and android
@@ -257,8 +243,8 @@ process_bind_mounts() {
 
 	# Prepare the fstab
 	FSTAB=${rootmnt}/etc/fstab
-	touch /run/image.fstab
-	mount -o bind /run/image.fstab $FSTAB || panic "Could not bind-mount fstab"
+	touch ${rootmnt}/run/image.fstab
+	mount -o bind ${rootmnt}/run/image.fstab $FSTAB || panic "Could not bind-mount fstab"
 	echo "/dev/root / rootfs defaults,ro 0 0" >> $FSTAB
 
 	tell_kmsg "Adding bind-mounts to $FSTAB"
@@ -344,15 +330,6 @@ extract_android_ramdisk() {
 mountroot() {
 	# list of possible userdata partition names
 	partlist="userdata UDA DATAFS USERDATA"
-
-	tell_kmsg "creating block/bootdevice/by-name mountpoints"
-    if [ -e /dev/mmcblk? ]
-    then
-        create_by_name_mountpoints /dev/mmcblk?p*
-    elif [ -e /dev/sd? ]
-    then
-        create_by_name_mountpoints /dev/sd??*
-    fi
 
 	pre_mountroot
 
