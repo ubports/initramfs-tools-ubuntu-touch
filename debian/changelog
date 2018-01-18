@@ -2,7 +2,7 @@ initramfs-tools-halium (0.95) UNRELEASED; urgency=medium
 
   * Initial changes for Halium
 
- -- JBBgameich <jbb.mail.de>  Tue, 16 Jan 2018 18:57:28 +0100
+ -- JBBgameich <jbb.mail@gmx.de>  Tue, 16 Jan 2018 18:57:28 +0100
 
 initramfs-tools-ubuntu-touch (0.94vivid5ubports1) vivid; urgency=medium
 
