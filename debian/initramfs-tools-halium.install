@@ -1,7 +1,7 @@
-conf/touch			usr/share/initramfs-tools/conf.d
+conf/halium			usr/share/initramfs-tools/conf.d
 scripts/*			usr/share/initramfs-tools/scripts
-hooks/touch			usr/share/initramfs-tools/hooks
-fstab				usr/share/initramfs-tools-ubuntu-touch
-bootimg/*			usr/share/initramfs-tools-ubuntu-touch
+hooks/halium			usr/share/initramfs-tools/hooks
+fstab				usr/share/initramfs-tools-halium
+bootimg/*			usr/share/initramfs-tools-halium
 usr
 etc
