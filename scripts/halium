@@ -224,7 +224,7 @@ identify_file_layout() {
 		imagefile=/tmpmnt/rootfs.img
 		file_layout="halium"
 	else
-		file_layout="parition"
+		file_layout="partition"
 	fi
 
 }
