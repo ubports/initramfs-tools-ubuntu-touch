@@ -1,23 +1,29 @@
 sudo: required
 
 install:
-    - echo "deb http://de.archive.ubuntu.com/ubuntu xenial main universe" |sudo tee -a /etc/apt/sources.list
-    - sudo apt-get update
-    - sudo apt-get install qemu-user-static debootstrap -y
+- echo "deb http://de.archive.ubuntu.com/ubuntu xenial main universe" |sudo tee -a /etc/apt/sources.list
+- sudo apt-get update
+- sudo apt-get install qemu-user-static debootstrap -y
 
 script:
-    - chmod +x ./build-initrd.sh
-    - for i in armhf arm64 amd64 i386; do sudo ./build-initrd.sh -a $i; done
-
-deploy:
-    provider: releases
-    api_key:
-        secure: "HKKn4GGHXidbri+XCQ+NKsWj6l4GRXXeZMhUZQplhRPfSZT60Lkr5uBZj4s05KVaS1F8eq7TqM1pVf3mChj2/INb1NGUbzB+KO72h61nIhesiM4XYVgC+gbNb5yIBV8AnahIhZK53/9ghg5xUWYfO8BLPnuyadYvEk1E3o7Zd8jy9ftkbhjdJg03UmMllV/8le0HVw8ZHojCirk2+aOvTvV2oQBaG3bK/fALlEy5QNPQDxj1RCzFrckcKgRAij0cnvFpa13ZvGj3WrydRkdfpJzJuVznY0Et3JeK4ruYfJ08JPCXWSUECOLYJmbvH5n721+cUq6UoDZ1J1teKr7My+9P1OIMhwYhWKFn3+fswvCV6hXmkjcsqPuIe/sMeuxUPpKI+3yVHcqkr6F8wKOZQjPqqv4P5rpCxRc96KR5pVwmSX90c9bGEuIvIleJds91+0+t4X4BNkPMMWyYcN/ymhKRBTYNLPuLJzQz9hoOLCOx436eBWjaqi1Kz7J9o6xypGmZs8ZgUctiQBt2bUJWHtuZEQjP5yHI9Rk6Z+Ac2Uiux2hJYJC2QfYbyMYiUQfYIS5JT138q07swia30ImnBCF3DbHmSoTv/TlrwkOYImAldRCochyC4gE5dDsedXVwdwfIsGgIsJbQU8QiIC5Ur4o38dMIMci+qk5b8DLE83o="
-    on:
-        repo: Halium/initramfs-tools-halium
-        branch: halium
+- chmod +x ./build-initrd.sh
+- for i in armhf arm64 amd64 i386; do sudo ./build-initrd.sh -a $i; done
 
 branches:
   except:
-    - # Do not build tags that we create when we upload to GitHub Releases
-    - /^(?i:continuous)$/
+  - 
+  - "/^(?i:continuous)$/"
+
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: HjY32+MP6AopbW2zegdmv5ZxZtj95eDE/Ffw9h4RizhVoYu/vx9yGnm1hWGMGglLg0FMEb3JHWAmlxFaXuY9syvOYcgMqhVZnQ5p3dseMCEzUqwT8tR82F2FYX4xaJ4Nca37YWtNHq4A+VKDQDiY7+TPKAKRLnOhCUmT4VFYjcCU8WpKTfTKLBXDPQAYy5L2Um7tV1HKwbma+2Vt9CIutVQa7zhcprIetAkKRWb1TxQuz72/PKVvxOlwVgFvMUSyQodFG9C5dsNpSC4DbMVFQYg0rxg89m+j+KMvCXyNDcFztUVbdKWYFEdmKo1OMTMx8Y6bTm9fP4hdvUMZNK9aQI2kCE9laQ0OiJ92WfEN/rHa6dQ5LJMMMiDAm4IG4/9ugNCgAyBdWT1DFhvEWEHlQVAWL9mNhpYmAVYITMQZnx1xF5aSzE9knFONh/nPEwBYjDNHvK0knSPekqWOI+/2Pt+lZ87we6g1w2pu88E+InJWjvTSMUWU8rKsTdkLLaDgQWxzxTevzZ+OVZYk1bdFPltJNZ3MOoT+E277xBp3+8iVpJYTe29Ak2KbWa+KvllwQUMhvFqaZbB/vxCPlUdZwxxOnl7cVK2le8qso4XdFT5k9UejxPro3ik8R/vMvj4e3r7efhpWAKVl9fv+h9GF/LEcSgWE1+K1t4tanRT1oqc=
+  file: 
+    - build/initrd.img-touch-armhf
+    - build/initrd.img-touch-arm64
+    - build/initrd.img-touch-amd64
+    - build/initrd.img-touch-i386
+  on:
+    repo: Halium/initramfs-tools-halium
+    branch: halium
