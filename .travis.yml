@@ -1,17 +1,21 @@
 sudo: required
 
 install:
-    - sudo bash -c "echo deb http://de.archive.ubuntu.com/ubuntu bionic main >> /etc/apt/sources.list"
+    - echo "deb http://de.archive.ubuntu.com/ubuntu xenial main universe" |sudo tee -a /etc/apt/sources.list
     - sudo apt-get update
     - sudo apt-get install qemu-user-static debootstrap -y
 
 script:
     - chmod +x ./build-initrd.sh
-    - for i in armhf armel arm64 amd64 i386; do sudo ./build-initrd.sh -a $i; done
+    - for i in armhf arm64 amd64 i386; do sudo ./build-initrd.sh -a $i; done
 
-after_success:
-    - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
-    - bash upload.sh out/*
+deploy:
+    provider: releases
+    api_key:
+        secure: "HKKn4GGHXidbri+XCQ+NKsWj6l4GRXXeZMhUZQplhRPfSZT60Lkr5uBZj4s05KVaS1F8eq7TqM1pVf3mChj2/INb1NGUbzB+KO72h61nIhesiM4XYVgC+gbNb5yIBV8AnahIhZK53/9ghg5xUWYfO8BLPnuyadYvEk1E3o7Zd8jy9ftkbhjdJg03UmMllV/8le0HVw8ZHojCirk2+aOvTvV2oQBaG3bK/fALlEy5QNPQDxj1RCzFrckcKgRAij0cnvFpa13ZvGj3WrydRkdfpJzJuVznY0Et3JeK4ruYfJ08JPCXWSUECOLYJmbvH5n721+cUq6UoDZ1J1teKr7My+9P1OIMhwYhWKFn3+fswvCV6hXmkjcsqPuIe/sMeuxUPpKI+3yVHcqkr6F8wKOZQjPqqv4P5rpCxRc96KR5pVwmSX90c9bGEuIvIleJds91+0+t4X4BNkPMMWyYcN/ymhKRBTYNLPuLJzQz9hoOLCOx436eBWjaqi1Kz7J9o6xypGmZs8ZgUctiQBt2bUJWHtuZEQjP5yHI9Rk6Z+Ac2Uiux2hJYJC2QfYbyMYiUQfYIS5JT138q07swia30ImnBCF3DbHmSoTv/TlrwkOYImAldRCochyC4gE5dDsedXVwdwfIsGgIsJbQU8QiIC5Ur4o38dMIMci+qk5b8DLE83o="
+    on:
+        repo: Halium/initramfs-tools-halium
+        branch: halium
 
 branches:
   except:

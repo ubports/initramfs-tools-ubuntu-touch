@@ -5,6 +5,7 @@ set -e
 export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
 DEFAULTMIRROR="https://deb.debian.org/debian"
+APT_COMMAND="apt -y"
 
 usage() {
 	echo "Usage:
@@ -64,33 +65,6 @@ do_chroot() {
 	trap - INT EXIT
 }
 
-# Constants
-
-START_STOP_DAEMON=$(
-	cat <<EOF
-#!/bin/sh
-echo 1>&2
-echo 'Warning: Fake start-stop-daemon called, doing nothing.' 1>&2
-exit 0
-EOF
-)
-
-POLICY_RC_D=$(
-	cat <<EOF
-#!/bin/sh
-exit 101
-EOF
-)
-
-INITCTL=$(
-	cat <<EOF
-#!/bin/sh
-echo 1>&2
-echo 'Warning: Fake initctl called, doing nothing.' 1>&2
-exit 0
-EOF
-)
-
 if [ ! -e $ROOT/.min-done ]; then
 
 	[ -d $ROOT ] && rm -r $ROOT
@@ -112,15 +86,10 @@ if [ ! -e $ROOT/.min-done ]; then
 
 	# after the switch to systemd we now need to install upstart explicitly
 	echo "nameserver 8.8.8.8" >$ROOT/etc/resolv.conf
-	do_chroot $ROOT "apt-get -y update"
-	#do_chroot $ROOT "apt-get -y install upstart --no-install-recommends"
+	do_chroot $ROOT "$APT_COMMAND update"
 
 	# We also need to install dpkg-dev in order to use dpkg-architecture.
-	do_chroot $ROOT "apt-get -y install dpkg-dev --no-install-recommends"
-
-	# mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
-	# echo $INITCTL > $ROOT/sbin/initctl
-	# chmod a+rx $ROOT/sbin/initctl
+	do_chroot $ROOT "$APT_COMMAND install dpkg-dev --no-install-recommends"
 
 	touch $ROOT/.min-done
 else
@@ -128,9 +97,9 @@ else
 fi
 
 # install all packages we need to roll the generic initrd
-do_chroot $ROOT "apt-get -y update"
-do_chroot $ROOT "apt-get -y dist-upgrade"
-do_chroot $ROOT "apt-get -y install $INCHROOTPKGS --no-install-recommends"
+do_chroot $ROOT "$APT_COMMAND update"
+do_chroot $ROOT "$APT_COMMAND dist-upgrade"
+do_chroot $ROOT "$APT_COMMAND install $INCHROOTPKGS --no-install-recommends"
 DEB_HOST_MULTIARCH=$(chroot $ROOT dpkg-architecture -q DEB_HOST_MULTIARCH)
 
 cp -a conf/halium ${ROOT}/usr/share/initramfs-tools/conf.d
@@ -139,13 +108,6 @@ cp -a hooks/* ${ROOT}/usr/share/initramfs-tools/hooks
 
 VER="$ARCH"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
-
-## Temporary HACK to work around FTBFS
-# mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot
-# mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot
-
-# touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot/libfakechroot.so
-# touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
 
 do_chroot $ROOT "update-initramfs -tc -ktouch-$VER -v"
 

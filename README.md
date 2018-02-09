@@ -12,6 +12,7 @@ Requirements:
 * `sudo` rights on the machine, to create the chroot
 
 1. Clone this repository into your home folder
+1. Install the prerequisites: `sudo apt install debootstrap qemu-user-static binfmt-support dpkg-dev`
 1. `cd` into the repository
 1. Run `sudo ./build-initrd.sh -a [ARCH]`
 
