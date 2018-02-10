@@ -1,5 +1,10 @@
 sudo: required
 
+# Only build if there's no tag, but manually set the 'continuous' tag for deploy
+if: tag IS blank
+env: 
+  - TRAVIS_TAG=continuous
+
 install:
 - echo "deb http://de.archive.ubuntu.com/ubuntu xenial main universe" |sudo tee -a /etc/apt/sources.list
 - sudo apt-get update
@@ -7,7 +12,7 @@ install:
 
 script:
 - chmod +x ./build-initrd.sh
-- for i in armhf arm64 amd64 i386; do sudo ./build-initrd.sh -a $i; done
+- for i in arm64; do sudo ./build-initrd.sh -a $i; done
 
 branches:
   except:
@@ -25,12 +30,12 @@ deploy:
   api_key:
     secure: HjY32+MP6AopbW2zegdmv5ZxZtj95eDE/Ffw9h4RizhVoYu/vx9yGnm1hWGMGglLg0FMEb3JHWAmlxFaXuY9syvOYcgMqhVZnQ5p3dseMCEzUqwT8tR82F2FYX4xaJ4Nca37YWtNHq4A+VKDQDiY7+TPKAKRLnOhCUmT4VFYjcCU8WpKTfTKLBXDPQAYy5L2Um7tV1HKwbma+2Vt9CIutVQa7zhcprIetAkKRWb1TxQuz72/PKVvxOlwVgFvMUSyQodFG9C5dsNpSC4DbMVFQYg0rxg89m+j+KMvCXyNDcFztUVbdKWYFEdmKo1OMTMx8Y6bTm9fP4hdvUMZNK9aQI2kCE9laQ0OiJ92WfEN/rHa6dQ5LJMMMiDAm4IG4/9ugNCgAyBdWT1DFhvEWEHlQVAWL9mNhpYmAVYITMQZnx1xF5aSzE9knFONh/nPEwBYjDNHvK0knSPekqWOI+/2Pt+lZ87we6g1w2pu88E+InJWjvTSMUWU8rKsTdkLLaDgQWxzxTevzZ+OVZYk1bdFPltJNZ3MOoT+E277xBp3+8iVpJYTe29Ak2KbWa+KvllwQUMhvFqaZbB/vxCPlUdZwxxOnl7cVK2le8qso4XdFT5k9UejxPro3ik8R/vMvj4e3r7efhpWAKVl9fv+h9GF/LEcSgWE1+K1t4tanRT1oqc=
   file: 
-    - out/initrd.img-touch-armhf
+    # - out/initrd.img-touch-armhf
     - out/initrd.img-touch-arm64
-    - out/initrd.img-touch-amd64
-    - out/initrd.img-touch-i386
+    # - out/initrd.img-touch-amd64
+    # - out/initrd.img-touch-i386
   on:
-    tags: false
+    tags: true
     repo: Halium/initramfs-tools-halium
     branch: halium
   overwrite: true
