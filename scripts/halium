@@ -465,10 +465,8 @@ mountroot() {
 
 		# Mounting userdata
 		mkdir -p ${rootmnt}/data
-		mkdir -p ${rootmnt}/userdata
-		mount --move /tmpmnt ${rootmnt}/userdata
-		mkdir -p ${rootmnt}/userdata/android-data
-		mount -o bind ${rootmnt}/userdata/android-data ${rootmnt}/data
+		mkdir -p /tmpmnt/android-data
+		mount -o bind /tmpmnt/android-data ${rootmnt}/data
 
 		# Set halium version properties
 		set_halium_version_properties ${rootmnt}/halium-system ${rootmnt}/data
@@ -485,15 +483,6 @@ mountroot() {
 
 		mount --move /tmpmnt ${rootmnt}/userdata
 
-		# Set halium version properties
-		mkdir -p ${rootmnt}/userdata/android-data
-		set_halium_version_properties ${rootmnt} ${rootmnt}/userdata/android-data
-
-		# Get device information
-		device=$(grep ^ro.product.device= /android-system/build.prop | sed -e 's/.*=//')
-		[ -z "$device" ] && device="unknown" && tell_kmsg "WARNING: Didn't find a device name. Is the Android system image mounted correctly?"
-		tell_kmsg "device is $device"
-
 		# Mount some tmpfs
 		mkdir -p ${rootmnt}/android
 		mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
@@ -501,6 +490,24 @@ mountroot() {
 
 		# Create some needed paths on tmpfs
 		mkdir -p ${rootmnt}/android/data ${rootmnt}/android/system
+
+		# Mounting userdata
+		mkdir -p ${rootmnt}/data
+		mkdir -p ${rootmnt}/userdata
+		mount --move /tmpmnt ${rootmnt}/userdata
+		mkdir -p ${rootmnt}/userdata/android-data
+
+		# All *three* places that the fake userdata needs to be mounted
+		mount -o bind ${rootmnt}/userdata/android-data ${rootmnt}/data
+		mount -o bind ${rootmnt}/data ${rootmnt}/android/data
+		mount -o bind ${rootmnt}/data /android-rootfs/data
+
+		set_halium_version_properties ${rootmnt} ${rootmnt}/userdata/android-data
+
+		# Get device information
+		device=$(grep ^ro.product.device= /android-system/build.prop | sed -e 's/.*=//')
+		[ -z "$device" ] && device="unknown" && tell_kmsg "WARNING: Didn't find a device name. Is the Android system image mounted correctly?"
+		tell_kmsg "device is $device"
 
 		process_bind_mounts
 
