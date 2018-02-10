@@ -56,8 +56,7 @@ inject_loop() {
 	echo "########################## inject loop done"
 }
 
-usb_setup "halium-initrd telnet 192.168.2.15: ${REASON}"
-echo "initrd: PANIC for reason: ${REASON}" >/dev/kmsg || true
+usb_setup "halium-initrd telnet 192.168.2.15"
 
 USB_IFACE=notfound
 /sbin/ifconfig rndis0 $LOCAL_IP && USB_IFACE=rndis0
@@ -94,7 +93,7 @@ echo "########################## starting telnetd"
 $EXPLICIT_BUSYBOX telnetd -b ${LOCAL_IP}:${TELNET_DEBUG_PORT} -l /bin/sh
 
 # For some reason this does not work in rootfs
-usb_info "UBports initrd Debug telnet on port $TELNET_DEBUG_PORT on $USB_IFACE $LOCAL_IP - also running udhcpd"
+usb_info "Halium initrd Debug telnet on port $TELNET_DEBUG_PORT on $USB_IFACE $LOCAL_IP - also running udhcpd"
 
 ps -wlT
 ps -ef
