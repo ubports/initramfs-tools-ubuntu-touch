@@ -14,6 +14,12 @@ branches:
   - 
   - "/^(?i:continuous)$/"
 
+before-deploy:
+    # Set up git user name and tag this commit
+  - git config --local user.name "UniversalSuperBox"
+  - git config --local user.email "UniversalSuperBox@users.noreply.github.com"
+  - git tag "continuous"
+
 deploy:
   skip_cleanup: true
   provider: releases
