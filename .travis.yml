@@ -15,7 +15,7 @@ script:
   - for i in armhf arm64 amd64 i386; do sudo ./build-initrd.sh -a $i; done
 
 before_cache:
-  - chown -R travis build/
+  - sudo chown -R travis build/
 
 cache:
   directories:
