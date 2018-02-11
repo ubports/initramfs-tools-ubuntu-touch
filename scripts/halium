@@ -11,6 +11,13 @@ tell_kmsg() {
 	echo "initrd: $1" >/dev/kmsg || true
 }
 
+halium_panic() {
+	# Puts panic reason into kmsg and then starts the panic handlers
+	REASON="$1"
+	tell_kmsg "PANIC for reason: $REASON"
+	panic $REASON
+}
+
 identify_boot_mode() {
 	# Our current list of supported boot modes:
 	## BOOT_MODE = halium and android
@@ -242,7 +249,7 @@ process_bind_mounts() {
 	# Prepare the fstab
 	FSTAB=${rootmnt}/etc/fstab
 	touch ${rootmnt}/run/image.fstab
-	mount -o bind ${rootmnt}/run/image.fstab $FSTAB || panic "Could not bind-mount fstab"
+	mount -o bind ${rootmnt}/run/image.fstab $FSTAB ||halium_panic "Could not bind-mount fstab"
 	echo "/dev/root / rootfs defaults,ro 0 0" >>$FSTAB
 
 	tell_kmsg "Adding bind-mounts to $FSTAB"
@@ -335,6 +342,9 @@ mountroot() {
 	run_scripts /scripts/local-premount
 	[ "$quiet" != "y" ] && log_end_msg
 
+	# Put all of this script's output into /dev/kmsg
+	exec &>/dev/kmsg
+
 	# Mount root
 	#
 	# Create a temporary mountpoint for the bindmount
@@ -363,7 +373,7 @@ mountroot() {
 	fi
 
 	if [ -z "$path" ]; then
-		panic "Couldn't find data partition."
+		halium_panic "Couldn't find data partition."
 	fi
 
 	tell_kmsg "checking filesystem integrity for the userdata partition"
@@ -445,6 +455,8 @@ mountroot() {
 		tell_kmsg "mounting android system image from system rootfs"
 		mount -o loop,$MOUNT /halium-system/var/lib/lxc/android/system.img /android-system
 	fi
+
+	[ $? -eq 0 ] || tell_kmsg "WARNING: Failed to mount Android system.img."
 
 	extract_android_ramdisk
 
@@ -555,7 +567,7 @@ mountroot() {
 
 	else
 		# Possibly a re-partitioned device
-		panic "Couldn't find a system partition."
+		halium_panic "Couldn't find a system partition."
 	fi
 
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-bottom"
