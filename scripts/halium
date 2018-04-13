@@ -407,7 +407,7 @@ mountroot() {
 	# FIXME: data=journal used as a workaround for bug 1387214
 	mount -o discard,data=journal $path /tmpmnt
 
-	# Set $syspart if it is specified as systempart= on the command line
+	# Set $_syspart if it is specified as systempart= on the command line
 	if grep -q systempart= /proc/cmdline; then
 		for x in $(cat /proc/cmdline); do
 			case ${x} in
@@ -421,9 +421,9 @@ mountroot() {
 	identify_boot_mode
 	identify_file_layout
 
-	# If both $imagefile and $syspart are set, something is wrong. The strange
+	# If both $imagefile and $_syspart are set, something is wrong. The strange
 	# output from this could be a clue in that situation.
-	tell_kmsg "Halium rootfs is $imagefile $syspart"
+	tell_kmsg "Halium rootfs is $imagefile $_syspart"
 
 	# Prepare the root filesystem
 	# NOTE: We mount it read-write in all cases, then remount read-only.
@@ -437,22 +437,26 @@ mountroot() {
 	mkdir -p /android-system
 
 	tell_kmsg "mounting system rootfs at /halium-system"
-	if [ -n "$syspart" ]; then
-		mount -o rw $syspart /halium-system
+	if [ -n "$_syspart" ]; then
+		mount -o rw $_syspart /halium-system
 	elif [ -f "$imagefile" ]; then
+		# Rootfs is an image file
 		mount -o loop,rw $imagefile /halium-system
-		# If either (android) /data/.writable_image or (on rootfs)
-		# /.writable_image exist, mount the rootfs as rw
-		if [ -e /tmpmnt/.writable_image ] || [ -e $/halium-system/.writable_image ]; then
-			tell_kmsg "mounting $imagefile (image developer mode)"
-			mountroot_status="$?"
-		else
-			tell_kmsg "mounting $imagefile (user mode)"
-			mount -o remount,ro /halium-system
-			mountroot_status="$?"
-		fi
 	elif [ -d "$imagefile" ]; then
+		# Rootfs is a directory
 		mount -o bind /tmpmnt/halium-rootfs /halium-system
+	fi
+
+	# If either (android) /data/.writable_image or (on rootfs)
+	# /.writable_image exist, mount the rootfs as rw
+	if [ -e /tmpmnt/.writable_image ] || [ -e /halium-system/.writable_image ]; then
+		tell_kmsg "mounting $_syspart $imagefile (image developer mode)"
+		mountroot_status="$?"
+	else
+		# Neither of those exist, remount read-only
+		tell_kmsg "mounting $_syspart $imagefile (user mode)"
+		mount -o remount,ro /halium-system
+		mountroot_status="$?"
 	fi
 
 	# Mount the android system partition to a temporary location
@@ -475,11 +479,10 @@ mountroot() {
 	extract_android_ramdisk
 
 	# Determine whether we should boot to rootfs or Android
-	if ([ -e $imagefile ] || [ -n "$syspart" ]) && [ "$BOOT_MODE" = "android" ]; then
+	if ([ -e $imagefile ] || [ -n "$_syspart" ]) && [ "$BOOT_MODE" = "android" ]; then
 		# Bootloader says this is factory or charger mode, boot into Android.
 		tell_kmsg "Android boot mode for factory or charger mode"
 
-		mount /halium-system -o remount,ro
 		mount --move /android-rootfs ${rootmnt}
 		mount --move /android-system ${rootmnt}/system
 
@@ -501,7 +504,7 @@ mountroot() {
 		ln -s ../init ${rootmnt}/sbin/init
 		ln -s ../init ${rootmnt}/sbin/recovery
 		tell_kmsg "booting android..."
-	elif [ -e $imagefile ] || [ -n "$syspart" ]; then
+	elif [ -e $imagefile ] || [ -n "$_syspart" ]; then
 		# Regular image boot
 		tell_kmsg "Normal boot"
 
