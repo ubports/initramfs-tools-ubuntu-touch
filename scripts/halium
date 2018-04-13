@@ -145,6 +145,11 @@ mount_android_partitions() {
 		tell_kmsg "mounting $path as ${mount_root}/$2"
 		mount $path ${mount_root}/$2 -t $3 -o $4
 	done
+
+	# Create an appropriate symlink for vendor files
+	if [ ! -e ${mount_root}/vendor ]; then
+		ln -sf system/vendor ${mount_root}/vendor
+	fi
 }
 
 mount_halium_overlay() {
