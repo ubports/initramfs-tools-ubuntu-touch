@@ -225,10 +225,16 @@ identify_file_layout() {
 	#
 	# = "partition" means the rootfs is located on the device's system partition
 	# and will contain /var/lib/lxc/android/system.img
+	#
+	# = "subdir" means the rootfs is located in a folder on the device's userdata partition
+	# and will contain /var/lib/lxc/android/system.img
 
 	if [ -e /tmpmnt/rootfs.img ]; then
 		imagefile=/tmpmnt/rootfs.img
 		file_layout="halium"
+	elif [ -d /tmpmnt/halium-rootfs ]; then
+		imagefile=/tmpmnt/halium-rootfs
+		file_layout="subdir"
 	else
 		file_layout="partition"
 	fi
@@ -245,6 +251,8 @@ process_bind_mounts() {
 		return 0
 	fi
 
+	# Mount a tmpfs in /run of rootfs to put the future image.fstab
+	mount -o rw,nosuid,noexec,relatime,mode=755 -t tmpfs tmpfs ${rootmnt}/run
 	# Prepare the fstab
 	FSTAB=${rootmnt}/etc/fstab
 	touch ${rootmnt}/run/image.fstab
@@ -331,6 +339,11 @@ extract_android_ramdisk() {
 	cd $OLD_CWD
 }
 
+mount_kernel_modules() {
+	# Bind-mount /lib/modules from Android
+	[ -e ${rootmnt}/android/system/lib/modules ] && mount --bind ${rootmnt}/android/system/lib/modules ${rootmnt}/lib/modules
+}
+
 mountroot() {
 	# list of possible userdata partition names
 	partlist="userdata UDA DATAFS USERDATA"
@@ -382,7 +395,7 @@ mountroot() {
 	fsck_start=$(date +%s)
 	mount -o errors=remount-ro $path /tmpmnt
 	umount /tmpmnt
-	e2fsck -y $path >/run/initramfs/e2fsck.out 2>&1
+	e2fsck -y $path >/run/e2fsck.out 2>&1
 	fsck_end=$(date +%s)
 	tell_kmsg "checking filesystem for userdata took (including e2fsck) $((fsck_end - fsck_start)) seconds"
 
@@ -426,7 +439,7 @@ mountroot() {
 	tell_kmsg "mounting system rootfs at /halium-system"
 	if [ -n "$syspart" ]; then
 		mount -o rw $syspart /halium-system
-	else
+	elif [ -f "$imagefile" ]; then
 		mount -o loop,rw $imagefile /halium-system
 		# If either (android) /data/.writable_image or (on rootfs)
 		# /.writable_image exist, mount the rootfs as rw
@@ -438,6 +451,8 @@ mountroot() {
 			mount -o remount,ro /halium-system
 			mountroot_status="$?"
 		fi
+	elif [ -d "$imagefile" ]; then
+		mount -o bind /tmpmnt/halium-rootfs /halium-system
 	fi
 
 	# Mount the android system partition to a temporary location
@@ -486,7 +501,7 @@ mountroot() {
 		ln -s ../init ${rootmnt}/sbin/init
 		ln -s ../init ${rootmnt}/sbin/recovery
 		tell_kmsg "booting android..."
-	elif [ -e $imagefile -o -n "$syspart" ]; then
+	elif [ -e $imagefile ] || [ -n "$syspart" ]; then
 		# Regular image boot
 		tell_kmsg "Normal boot"
 
@@ -495,21 +510,18 @@ mountroot() {
 		# Mount some tmpfs
 		mkdir -p ${rootmnt}/android
 		mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
-		mount -o rw,nosuid,noexec,relatime,mode=755 -t tmpfs tmpfs ${rootmnt}/run
 
 		# Create some needed paths on tmpfs
 		mkdir -p ${rootmnt}/android/data ${rootmnt}/android/system
 
-		# Mounting userdata
-		mkdir -p ${rootmnt}/data
+		# Mounting userdata outside of /android, to avoid having LXC container access it
 		mkdir -p ${rootmnt}/userdata
 		mount --move /tmpmnt ${rootmnt}/userdata
-		mkdir -p ${rootmnt}/userdata/android-data
 
-		# All *three* places that the fake userdata needs to be mounted
-		mount -o bind ${rootmnt}/userdata/android-data ${rootmnt}/data
-		mount -o bind ${rootmnt}/data ${rootmnt}/android/data
-		mount -o bind ${rootmnt}/data /android-rootfs/data
+		# Create a fake android data, shared by rootfs and LXC container
+		mkdir -p ${rootmnt}/userdata/android-data
+		mount -o bind ${rootmnt}/userdata/android-data ${rootmnt}/android/data
+		[ ! -h ${rootmnt}/data ] && ln -sf /android/data ${rootmnt}/data
 
 		set_halium_version_properties ${rootmnt} ${rootmnt}/userdata/android-data
 
@@ -530,15 +542,19 @@ mountroot() {
 		mount --move /android-system ${rootmnt}/android/system
 
 		# halium overlay available in the Android system image (hardware specific configs)
-		mount_halium_overlay ${rootmnt}/android/system/halium ${rootmnt}
+		if [ -e ${rootmnt}/android/system/halium ]; then
+			mount_halium_overlay ${rootmnt}/android/system/halium ${rootmnt}
+		fi
 
 		# Apply device-specific udev rules
-		if [ ! -f ${rootmnt}/android/system/halium/lib/udev/rules.d/70-android.rules ] && [ "$device" != "unknown" ]; then
+		if [ -e ${rootmnt}/usr/lib/lxc-android-config/70-$device.rules ] && 
+			[ ! -f ${rootmnt}/android/system/halium/lib/udev/rules.d/70-android.rules ] && 
+			[ "$device" != "unknown" ]; then
 			mount --bind ${rootmnt}/usr/lib/lxc-android-config/70-$device.rules ${rootmnt}/lib/udev/rules.d/70-android.rules
 		fi
 
 		# Bind-mount /lib/modules from Android
-		[ -e ${rootmnt}/android/system/lib/modules ] && mount --bind ${rootmnt}/android/system/lib/modules ${rootmnt}/lib/modules
+		mount_kernel_modules
 
 		# Bind-mount /var/lib/ureadahead if available on persistent storage
 		# this is required because ureadahead runs before mountall
