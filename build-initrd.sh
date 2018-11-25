@@ -4,117 +4,80 @@ set -e
 
 export FLASH_KERNEL_SKIP=1
 export DEBIAN_FRONTEND=noninteractive
-DEFAULTMIRROR="https://deb.debian.org/debian"
-APT_COMMAND="apt -y"
 
-usage() {
-	echo "Usage:
+DEB_HOST_MULTIARCH=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
 
--a|--arch	Architecture to create initrd for. Default armhf
--m|--mirror	Custom mirror URL to use. Must serve your arch.
-"
-}
+# list all packages needed for a generic ubuntu touch initrd here
+INCHROOTPKGS="initramfs-tools dctrl-tools lxc-android-config abootimg android-tools-adbd e2fsprogs"
 
-echob() {
-	echo "Builder: $@"
-}
+MIRROR=$(grep "^deb " /etc/apt/sources.list|grep -v "ppa.launchpad.net"|head -1|cut -d' ' -f2)
+RELEASE=$(lsb_release -cs)
+ROOT=./build
 
-while [ $# -gt 0 ]; do
-	case "$1" in
-	-h | --help)
-		usage
-		exit 0
-		;;
-	-a | --arch)
-		[ -n "$2" ] && ARCH=$2 shift || usage
-		;;
-	-m | --mirror)
-		[ -n "$2" ] && MIRROR=$2 shift || usage
-		;;
-	esac
-	shift
-done
+# create a plain chroot to work in
+rm -rf $ROOT
+fakechroot -c fakechroot-config debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
 
-# Defaults for all arguments, so they can be set by the environment
-[ -z $ARCH ] && ARCH="armhf"
-[ -z $MIRROR ] && MIRROR=$DEFAULTMIRROR
-[ -z $RELEASE ] && RELEASE="stretch"
-[ -z $ROOT ] && ROOT=./build/$ARCH
-[ -z $OUT ] && OUT=./out
+# TODO this can be dropped once all packages are in main
+sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
+sed -i 's/raring/saucy/' $ROOT/etc/apt/sources.list
 
-# list all packages needed for halium's initrd here
-[ -z $INCHROOTPKGS ] && INCHROOTPKGS="initramfs-tools dctrl-tools e2fsprogs libc6-dev zlib1g-dev libssl-dev busybox-static"
+# for xenial/vivid builds we also need to make sure we use the overlay
+cp ubports.list $ROOT/etc/apt/sources.list.d/
+cp ubports.pref $ROOT/etc/apt/preferences.d/
 
-BOOTSTRAP_BIN="qemu-debootstrap --arch $ARCH --variant=minbase"
+# make sure we do not start daemons at install time
+mv $ROOT/sbin/start-stop-daemon $ROOT/sbin/start-stop-daemon.REAL
+cat > $ROOT/sbin/start-stop-daemon <<EOF
+#!/bin/sh
+echo 1>&2
+echo 'Warning: Fake start-stop-daemon called, doing nothing.' 1>&2
+exit 0
+EOF
+chmod a+rx $ROOT/sbin/start-stop-daemon
 
-umount_chroot() {
-	chroot $ROOT umount /sys >/dev/null 2>&1 || true
-	chroot $ROOT umount /proc >/dev/null 2>&1 || true
-	echo
-}
+cat > $ROOT/usr/sbin/policy-rc.d <<EOF
+#!/bin/sh
+exit 101
+EOF
+chmod a+rx $ROOT/usr/sbin/policy-rc.d
 
-do_chroot() {
-	trap umount_chroot INT EXIT
-	ROOT="$1"
-	CMD="$2"
-	echob "Executing \"$2\" in chroot"
-	chroot $ROOT mount -t proc proc /proc
-	chroot $ROOT mount -t sysfs sys /sys
-	chroot $ROOT $CMD
-	umount_chroot
-	trap - INT EXIT
-}
+# after teh switch to systemd we now need to install upstart explicitly
+fakechroot chroot $ROOT apt-get -y update
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y install upstart
 
-if [ ! -e $ROOT/.min-done ]; then
-
-	[ -d $ROOT ] && rm -r $ROOT
-
-	# create a plain chroot to work in
-	echob "Creating chroot with arch $ARCH in $ROOT"
-	mkdir build || true
-	$BOOTSTRAP_BIN $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
-
-	#sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
-	sed -i 's,'"$DEFAULTMIRROR"','"$MIRROR"',' $ROOT/etc/apt/sources.list
-
-	# make sure we do not start daemons at install time
-	mv $ROOT/sbin/start-stop-daemon $ROOT/sbin/start-stop-daemon.REAL
-	echo $START_STOP_DAEMON >$ROOT/sbin/start-stop-daemon
-	chmod a+rx $ROOT/sbin/start-stop-daemon
-
-	echo $POLICY_RC_D >$ROOT/usr/sbin/policy-rc.d
-
-	# after the switch to systemd we now need to install upstart explicitly
-	echo "nameserver 8.8.8.8" >$ROOT/etc/resolv.conf
-	do_chroot $ROOT "$APT_COMMAND update"
-
-	# We also need to install dpkg-dev in order to use dpkg-architecture.
-	do_chroot $ROOT "$APT_COMMAND install dpkg-dev --no-install-recommends"
-
-	touch $ROOT/.min-done
-else
-	echob "Build environment for $ARCH found, reusing."
-fi
+mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
+cat > $ROOT/sbin/initctl <<EOF
+#!/bin/sh
+echo 1>&2
+echo 'Warning: Fake initctl called, doing nothing.' 1>&2
+exit 0
+EOF
+chmod a+rx $ROOT/sbin/initctl
 
 # install all packages we need to roll the generic initrd
-do_chroot $ROOT "$APT_COMMAND update"
-do_chroot $ROOT "$APT_COMMAND dist-upgrade"
-do_chroot $ROOT "$APT_COMMAND install $INCHROOTPKGS --no-install-recommends"
-DEB_HOST_MULTIARCH=$(chroot $ROOT dpkg-architecture -q DEB_HOST_MULTIARCH)
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y --allow-unauthenticated install $INCHROOTPKGS
 
 cp -a conf/halium ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/* ${ROOT}/usr/share/initramfs-tools/hooks
 
-VER="$ARCH"
+# remove the plymouth hooks from the chroot
+find $ROOT/usr/share/initramfs-tools -name plymouth -exec rm -f {} \;
+
+VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
 
 do_chroot $ROOT "update-initramfs -tc -ktouch-$VER -v"
 
-mkdir "$OUT" >/dev/null 2>&1 || true
-FILENAME=initrd.img-touch-$VER
-cp "$ROOT/boot/${FILENAME}" "$OUT"
-cd "$OUT"
-sha256sum "${FILENAME}" > "${FILENAME}.sha256"
-date -R > "${FILENAME}.timestamp"
+# hack for arm64 builds where some binaries look for the ld libs in the wrong place
+cd $ROOT
+ln -s lib/ lib64
+cd - >/dev/null 2>&1
+
+fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
+
+# make a more generically named link so external scripts can use the file without parsing the version
+cd $ROOT/boot
+ln -s initrd.img-touch-$VER initrd.img-touch
 cd - >/dev/null 2>&1
