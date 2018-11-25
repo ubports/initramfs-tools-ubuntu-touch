@@ -27,6 +27,10 @@ fakechroot -c fakechroot-config debootstrap --variant=fakechroot $RELEASE $ROOT 
 sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
 sed -i 's/raring/saucy/' $ROOT/etc/apt/sources.list
 
+# for xenial/vivid builds we also need to make sure we use the overlay
+cp ubports.list $ROOT/etc/apt/sources.list.d/
+cp ubports.pref $ROOT/etc/apt/preferences.d/
+
 # make sure we do not start daemons at install time
 mv $ROOT/sbin/start-stop-daemon $ROOT/sbin/start-stop-daemon.REAL
 cat > $ROOT/sbin/start-stop-daemon <<EOF
@@ -57,12 +61,15 @@ EOF
 chmod a+rx $ROOT/sbin/initctl
 
 # install all packages we need to roll the generic initrd
-fakechroot -c fakechroot-config chroot $ROOT apt-get -y install $INCHROOTPKGS
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y --allow-unauthenticated install $INCHROOTPKGS
 
 cp -a conf/touch ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/touch ${ROOT}/usr/share/initramfs-tools/hooks
 sed -i -e "s/#DEB_HOST_MULTIARCH#/$DEB_HOST_MULTIARCH/g" ${ROOT}/usr/share/initramfs-tools/hooks/touch
+
+# remove the plymouth hooks from the chroot
+find $ROOT/usr/share/initramfs-tools -name plymouth -exec rm -f {} \;
 
 VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
@@ -73,6 +80,11 @@ mkdir -p $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot
 
 touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/fakechroot/libfakechroot.so
 touch $ROOT/usr/lib/$DEB_HOST_MULTIARCH/libfakeroot/libfakeroot-sysv.so
+
+# hack for arm64 builds where some binaries look for the ld libs in the wrong place
+cd $ROOT
+ln -s lib/ lib64
+cd - >/dev/null 2>&1
 
 fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
 
