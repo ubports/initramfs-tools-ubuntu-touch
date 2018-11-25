@@ -49,7 +49,7 @@ chmod a+rx $ROOT/usr/sbin/policy-rc.d
 
 # after teh switch to systemd we now need to install upstart explicitly
 fakechroot chroot $ROOT apt-get -y update
-fakechroot -c fakechroot-config chroot $ROOT apt-get -y install upstart
+fakechroot -c fakechroot-config chroot $ROOT apt-get -y --allow-unauthenticated install upstart
 
 mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
 cat > $ROOT/sbin/initctl <<EOF
