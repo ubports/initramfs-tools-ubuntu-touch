@@ -25,7 +25,8 @@ fakechroot -c fakechroot-config debootstrap --variant=fakechroot $RELEASE $ROOT 
 
 # TODO this can be dropped once all packages are in main
 sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
-sed -i 's/raring/saucy/' $ROOT/etc/apt/sources.list
+
+echo "deb $MIRROR $RELEASE-updates main restricted" >> $ROOT/etc/apt/sources.list
 
 # for xenial/vivid builds we also need to make sure we use the overlay
 cp ubports.list $ROOT/etc/apt/sources.list.d/
