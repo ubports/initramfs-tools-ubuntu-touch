@@ -1,7 +1,5 @@
 sudo: required
 
-# Only build if there's no tag, but manually set the 'continuous' tag for deploy
-if: tag IS blank
 env: 
   - TRAVIS_TAG=continuous
 
