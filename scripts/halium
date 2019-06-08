@@ -533,7 +533,7 @@ mountroot() {
 		# Bootloader says this is factory or charger mode, boot into Android.
 		tell_kmsg "Android boot mode for factory or charger mode"
 
-		[ $ANDROID_IMAGE_MODE = "rootfs" ] && mount --move /android-rootfs ${rootmnt}
+		mount --move /android-rootfs ${rootmnt}
 		[ $ANDROID_IMAGE_MODE = "system" ] && mount --move /android-system ${rootmnt}/system
 
 		# Mount all the Android partitions
