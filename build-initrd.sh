@@ -38,7 +38,7 @@ done
 # Defaults for all arguments, so they can be set by the environment
 [ -z $ARCH ] && ARCH="armhf"
 [ -z $MIRROR ] && MIRROR=$DEFAULTMIRROR
-[ -z $RELEASE ] && RELEASE="stable"
+[ -z $RELEASE ] && RELEASE="stretch"
 [ -z $ROOT ] && ROOT=./build/$ARCH
 [ -z $OUT ] && OUT=./out
 
