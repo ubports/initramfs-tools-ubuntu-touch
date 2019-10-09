@@ -14,11 +14,6 @@ install:
 - sudo apt-get install qemu-user-static debootstrap -y
 script:
 - sudo ./build-initrd.sh
-before_cache:
-- sudo chown -R travis build/
-cache:
-  directories:
-  - build/
 before_deploy:
 - git config --local user.name "halium-initramfs-bot"
 - git config --local user.email "halium-initramfs-bot@users.noreply.github.com"
