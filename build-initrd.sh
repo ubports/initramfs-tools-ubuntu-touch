@@ -111,7 +111,10 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
 
 do_chroot $ROOT "update-initramfs -tc -ktouch-$VER -v"
 
-mkdir $OUT >/dev/null 2>&1 || true
-cp $ROOT/boot/initrd.img-touch-$VER $OUT
-cd $OUT
+mkdir "$OUT" >/dev/null 2>&1 || true
+FILENAME=initrd.img-touch-$VER
+cp "$ROOT/boot/${FILENAME}" "$OUT"
+cd "$OUT"
+sha256sum "${FILENAME}" > "${FILENAME}.sha256"
+date -R > "${FILENAME}.timestamp"
 cd - >/dev/null 2>&1
