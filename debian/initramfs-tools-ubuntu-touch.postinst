@@ -19,7 +19,7 @@ apply_diversions() {
 
 if [ "$1" = "configure" ]; then
 	if grep -q "^# UNCONFIGURED FSTAB FOR BASE SYSTEM" /etc/fstab; then
-		cp /usr/share/initramfs-tools-halium/fstab /etc/
+		cp /usr/share/initramfs-tools-ubuntu-touch/fstab /etc/
 	fi
 	# move bits out of the way that make our initrd to big
 	apply_diversions

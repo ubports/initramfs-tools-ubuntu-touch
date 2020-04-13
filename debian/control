@@ -1,4 +1,4 @@
-Source: initramfs-tools-halium
+Source: initramfs-tools-ubuntu-touch
 Section: utils
 Priority: optional
 Maintainer: Halium developers <admin@halium.org>

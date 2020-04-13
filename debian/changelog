@@ -1,4 +1,10 @@
-initramfs-tools-halium (0.95) UNRELEASED; urgency=medium
+initramfs-tools-ubuntu-touch (0.95+0ubports0) xenial; urgency=medium
+
+  * Merge changes from halium and ubuntu touch initramfs
+
+ -- Dalton Durst <dalton@ubports.com>  Mon, 13 Apr 2020 09:56:11 -0500
+
+initramfs-tools-ubuntu-touch (0.95) UNRELEASED; urgency=medium
 
   * Initial changes for Halium
 
