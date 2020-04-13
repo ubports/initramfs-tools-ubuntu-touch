@@ -2,7 +2,6 @@
 
 MINKVER="2.6.24"
 PREREQ=""
-DEB_HOST_MULTIARCH=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 # Output pre-requisites
 prereqs() {
@@ -24,6 +23,3 @@ copy_exec /sbin/resize2fs /sbin
 copy_exec /bin/chown /bin
 copy_exec /bin/mount /bin
 copy_exec /sbin/dumpe2fs /sbin
-copy_exec /lib/$DEB_HOST_MULTIARCH/libz.so.1
-copy_exec /usr/lib/$DEB_HOST_MULTIARCH/libcrypto.so
-copy_exec /usr/lib/$DEB_HOST_MULTIARCH/libdl.so
