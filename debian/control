@@ -2,7 +2,7 @@ Source: initramfs-tools-ubuntu-touch
 Section: utils
 Priority: optional
 Maintainer: Halium developers <admin@halium.org>
-Build-Depends: debhelper (>= 9), lsb-release, fakeroot
+Build-Depends: debhelper (>= 9), debootstrap, lsb-release, fakeroot, fakechroot
 Standards-Version: 4.1.3
 
 Package: initramfs-tools-ubuntu-touch
