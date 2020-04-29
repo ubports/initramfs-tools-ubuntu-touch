@@ -16,7 +16,7 @@ ROOT=./build
 
 # create a plain chroot to work in
 rm -rf $ROOT
-fakechroot -c fakechroot-config debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
+fakechroot -c fakechroot-config fakeroot debootstrap --variant=fakechroot $RELEASE $ROOT $MIRROR || cat $ROOT/debootstrap/debootstrap.log
 
 # TODO this can be dropped once all packages are in main
 sed -i 's/main$/main universe/' $ROOT/etc/apt/sources.list
@@ -44,8 +44,8 @@ EOF
 chmod a+rx $ROOT/usr/sbin/policy-rc.d
 
 # after teh switch to systemd we now need to install upstart explicitly
-fakechroot chroot $ROOT apt-get -y update
-fakechroot -c fakechroot-config chroot $ROOT apt-get -y --allow-unauthenticated install upstart
+fakechroot fakeroot chroot $ROOT apt-get -y update
+fakechroot -c fakechroot-config fakeroot chroot $ROOT apt-get -y --allow-unauthenticated install upstart
 
 mv $ROOT/sbin/initctl $ROOT/sbin/initctl.REAL
 cat > $ROOT/sbin/initctl <<EOF
@@ -57,7 +57,7 @@ EOF
 chmod a+rx $ROOT/sbin/initctl
 
 # install all packages we need to roll the generic initrd
-fakechroot -c fakechroot-config chroot $ROOT apt-get -y --allow-unauthenticated install $INCHROOTPKGS
+fakechroot -c fakechroot-config fakeroot chroot $ROOT apt-get -y --allow-unauthenticated install $INCHROOTPKGS
 
 cp -a conf/halium ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
@@ -66,17 +66,18 @@ cp -a hooks/* ${ROOT}/usr/share/initramfs-tools/hooks
 # remove the plymouth hooks from the chroot
 find $ROOT/usr/share/initramfs-tools -name plymouth -exec rm -f {} \;
 
-VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
+#VER="$(head -1 debian/changelog |sed -e 's/^.*(//' -e 's/).*$//')"
+VER="1"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
 
-do_chroot $ROOT "update-initramfs -tc -ktouch-$VER -v"
+#do_chroot $ROOT "update-initramfs -tc -ktouch-$VER -v"
 
 # hack for arm64 builds where some binaries look for the ld libs in the wrong place
 cd $ROOT
 ln -s lib/ lib64
 cd - >/dev/null 2>&1
 
-fakechroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
+fakechroot fakeroot chroot $ROOT update-initramfs -c -ktouch-$VER -v
 
 # make a more generically named link so external scripts can use the file without parsing the version
 cd $ROOT/boot
