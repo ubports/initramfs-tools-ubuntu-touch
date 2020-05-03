@@ -381,6 +381,9 @@ extract_android_ramdisk() {
 mount_kernel_modules() {
 	# Bind-mount /lib/modules from Android
 	[ -e ${rootmnt}/android/system/lib/modules ] && mount --bind ${rootmnt}/android/system/lib/modules ${rootmnt}/lib/modules
+
+	# Bind-mount modules from boot partition
+	[ -e ${rootmnt}/android/boot/modules ] && mount --bind ${rootmnt}/android/boot/modules ${rootmnt}/lib/modules 
 }
 
 mountroot() {
@@ -576,7 +579,7 @@ mountroot() {
 		mount --move /tmpmnt ${rootmnt}/userdata
 
 		mount --move /android-rootfs ${rootmnt}/var/lib/lxc/android/rootfs
-		[ $ANDROID_IMAGE_MODE = "system" ] && mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
+		[ ! $ANDROID_IMAGE_MODE = "rootfs" ] && mount -o rw,size=4096 -t tmpfs none ${rootmnt}/android
 		[ $ANDROID_IMAGE_MODE = "rootfs" ] && mount -o bind ${rootmnt}/var/lib/lxc/android/rootfs ${rootmnt}/android
 
 		mkdir -p ${rootmnt}/android/data ${rootmnt}/android/system
