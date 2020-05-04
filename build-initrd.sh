@@ -62,6 +62,7 @@ fakechroot -c fakechroot-config fakeroot chroot $ROOT apt-get -y --allow-unauthe
 cp -a conf/halium ${ROOT}/usr/share/initramfs-tools/conf.d
 cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/* ${ROOT}/usr/share/initramfs-tools/hooks
+cp -a usr/* ${ROOT}/usr/
 
 # remove the plymouth hooks from the chroot
 find $ROOT/usr/share/initramfs-tools -name plymouth -exec rm -f {} \;
