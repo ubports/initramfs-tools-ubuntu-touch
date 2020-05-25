@@ -25,13 +25,3 @@ Description: tools for mounting an Ubuntu Touch rootfs
  the root filesystem.
  .
  On failure the script will fire up an adb debugging shell
-
-Package: ubuntu-touch-generic-initrd
-Architecture: amd64 i386 armhf arm64
-Multi-Arch: foreign
-Depends: ${misc:Depends}
-Suggests: abootimg
-Description: generic initramfs to boot Ubuntu Touch flipped container images
- This package contains a binary generic initrd.img to be used with Ubuntu Touch
- flipped container images. Use abootimg to create an android boot.img from your
- specific zImage and the initrd.img in /usr/lib/ubuntu-touch-generic-initrd

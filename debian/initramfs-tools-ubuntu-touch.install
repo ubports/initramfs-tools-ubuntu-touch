@@ -4,4 +4,3 @@ hooks/halium			usr/share/initramfs-tools/hooks
 fstab				usr/share/initramfs-tools-ubuntu-touch
 bootimg/*			usr/share/initramfs-tools-ubuntu-touch
 usr
-etc
