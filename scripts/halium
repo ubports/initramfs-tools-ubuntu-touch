@@ -14,6 +14,7 @@ pre_mountroot() {
 tell_kmsg() {
 	# Echos a string into /dev/kmsg, ignoring errors.
 	echo "initrd: $1" >/dev/kmsg || true
+	echo "initrd: $1" || true
 }
 
 halium_panic() {
@@ -392,9 +393,9 @@ mountroot() {
 
 	pre_mountroot
 
-	echo "Making splash!"
+	tell_kmsg "Making splash!"
 	mknod /dev/fb0 c 29 0 || true
-	cat /scripts/splash > /dev/fb0 || true
+	cat /splash > /dev/fb0 || true
 
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-premount"
 	run_scripts /scripts/local-premount

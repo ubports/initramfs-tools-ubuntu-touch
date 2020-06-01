@@ -4,7 +4,7 @@
 	dh $@
 
 override_dh_auto_test:
-	@set -e; for f in hooks/* scripts/panic/telnet scripts/halium usr/sbin/*; do \
+	@set -e; for f in hooks/* scripts/halium usr/sbin/*; do \
 	    echo "Checking sh syntax of $$f"; \
 	    sh -n $$f; \
 	done
