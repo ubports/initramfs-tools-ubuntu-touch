@@ -9,11 +9,9 @@ Package: initramfs-tools-ubuntu-touch
 Architecture: amd64 i386 armhf arm64
 Multi-Arch: foreign
 Depends: initramfs-tools,
-         abootimg,
          udev (>= 175-0ubuntu29),
          upstart,
          coreutils,
-         android-tools-adbd,
          busybox-static,
          e2fsprogs,
          ${misc:Depends}
