@@ -1,3 +1,7 @@
+# Default fstab from initramfs-tools-ubuntu-touch. At runtime, a temporary file
+# should be mounted over this to provide writable areas on the read-only rootfs.
+# See /usr/share/initramfs-tools/scripts/halium
+
 # override the forced fsck from /lib/init/fstab, we use a bindmount which confuses mountall
 /dev/root       /	rootfs	defaults	0	0
 
