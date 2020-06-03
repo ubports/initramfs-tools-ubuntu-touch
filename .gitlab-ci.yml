@@ -1,0 +1,16 @@
+image: ubuntu:20.04
+
+variables:
+  GIT_SUBMODULE_STRATEGY: none
+
+build:
+  stage: build
+  script:
+    - apt update
+    - apt install debootstrap qemu-user-static binfmt-support dpkg-dev -y --no-install-recommends
+    - ./build-initrd.sh -a armhf
+    - ./build-initrd.sh -a arm64
+    - MIRROR=http://archive.ubuntu.com/ubuntu ./build-initrd.sh -a amd64
+  artifacts:
+    paths:
+      - out/*
