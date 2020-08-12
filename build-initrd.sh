@@ -10,6 +10,7 @@ APT_COMMAND="apt -y"
 usage() {
 	echo "Usage:
 -a|--arch	Architecture to create initrd for. Default armhf
+-d|--device	Device to create initrd for. Default none.
 -m|--mirror	Custom mirror URL to use. Must serve your arch.
 "
 }
@@ -30,6 +31,9 @@ while [ $# -gt 0 ]; do
 	-m | --mirror)
 		[ -n "$2" ] && MIRROR=$2 shift || usage
 		;;
+	-d | --device)
+		[ -n "$2" ] && DEVICE=$2 shift || usage
+		;;
 	esac
 	shift
 done
@@ -40,6 +44,7 @@ done
 [ -z $RELEASE ] && RELEASE="focal"
 [ -z $ROOT ] && ROOT=./build/$ARCH
 [ -z $OUT ] && OUT=./out
+[ -z $DEVICE ] && DEVICE=''
 
 # list all packages needed for halium's initrd here
 [ -z $INCHROOTPKGS ] && INCHROOTPKGS="initramfs-tools dctrl-tools e2fsprogs libc6-dev zlib1g-dev libssl-dev busybox-static"
@@ -106,7 +111,13 @@ cp -a scripts/* ${ROOT}/usr/share/initramfs-tools/scripts
 cp -a hooks/* ${ROOT}/usr/share/initramfs-tools/hooks
 cp -ar usr/share/initramfs-tools-ubuntu-touch ${ROOT}/usr/share/
 
-VER="$ARCH"
+if [ -e ${ROOT}/usr/share/initramfs-tools-ubuntu-touch/${DEVICE}-bootsplash.svg ]; then
+    convert ${ROOT}/usr/share/initramfs-tools-ubuntu-touch/${DEVICE}-bootsplash.svg RGBA:${ROOT}/usr/share/initramfs-tools-ubuntu-touch/splash
+else
+    touch ${ROOT}/usr/share/initramfs-tools-ubuntu-touch/splash
+fi
+
+VER="$ARCH$DEVICE"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/lib/$DEB_HOST_MULTIARCH"
 
 do_chroot $ROOT "update-initramfs -tc -ktouch-$VER -v"

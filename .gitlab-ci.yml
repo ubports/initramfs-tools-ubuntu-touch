@@ -2,14 +2,15 @@ image: ubuntu:20.04
 
 variables:
   GIT_SUBMODULE_STRATEGY: none
+  DEBIAN_FRONTEND: noninteractive
 
 build:
   stage: build
   script:
     - apt update
-    - apt install debootstrap qemu-user-static binfmt-support dpkg-dev -y --no-install-recommends
-    - ./build-initrd.sh -a armhf
-    - ./build-initrd.sh -a arm64
+    - apt install debootstrap qemu-user-static binfmt-support dpkg-dev imagemagick librsvg2-bin -y --no-install-recommends
+    - ./build-initrd.sh -a arm64 -d pinephone
+    - ./build-initrd.sh -a arm64 -d pinetab
     - MIRROR=http://archive.ubuntu.com/ubuntu ./build-initrd.sh -a amd64
   artifacts:
     paths:
