@@ -47,7 +47,7 @@ done
 [ -z $DEVICE ] && DEVICE=''
 
 # list all packages needed for halium's initrd here
-[ -z $INCHROOTPKGS ] && INCHROOTPKGS="initramfs-tools dctrl-tools e2fsprogs libc6-dev zlib1g-dev libssl-dev busybox-static"
+[ -z $INCHROOTPKGS ] && INCHROOTPKGS="initramfs-tools dctrl-tools e2fsprogs libc6-dev zlib1g-dev libssl-dev busybox-static gdisk"
 
 BOOTSTRAP_BIN="qemu-debootstrap --arch $ARCH --variant=minbase"
 

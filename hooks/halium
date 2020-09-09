@@ -18,6 +18,7 @@ esac
 . /usr/share/initramfs-tools/hook-functions
 
 copy_exec /sbin/swapon /sbin
+copy_exec /usr/sbin/sgdisk /sbin
 copy_exec /sbin/e2fsck /sbin
 copy_exec /sbin/resize2fs /sbin
 copy_exec /bin/chown /bin

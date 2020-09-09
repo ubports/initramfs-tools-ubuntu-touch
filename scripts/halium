@@ -231,6 +231,26 @@ sync_dirs() {
 	cd $OLD_PWD
 }
 
+resize_gpt_if_needed() {
+	# If the secondary GPT header is not at the end of the disk, fix it and
+	# resize userdata to match. This ensures all space on the disk is used.
+	if sgdisk -v "/dev/mmcblk${devnum}" | grep "use the 'e'" >/dev/null; then
+		tell_kmsg 'Automatically fixing GPT on boot media with sgdisk -e'
+		sgdisk -e "/dev/mmcblk${devnum}"
+		# This is only valid if partition 10 is userdata and the last partition.
+		# If these don't hold, the partition table has been modified and we
+		# can't safely modify it
+		if blkid /dev/mmcblk${devnum}p10 -t PARTLABEL=userdata >/dev/null && [ ! -e /dev/mmcblk${devnum}p11 ]; then
+			tell_kmsg 'Resizing userdata partition, its filesystem will be resized later in the initramfs.'
+			sgdisk --delete=10 /dev/mmcblk${devnum}
+			sgdisk --largest-new=10 /dev/mmcblk${devnum}
+			sgdisk --change-name=10:userdata /dev/mmcblk${devnum}
+		else
+			tell_kmsg 'Unable to resize userdata partition because partition 10 of the boot media is not data or there is another partition after it.'
+		fi
+	fi
+}
+
 resize_userdata_if_needed() {
 
 	# See if the filesystem on the userdata partition needs resizing (usually on first boot).
@@ -396,6 +416,8 @@ mountroot() {
 	tell_kmsg "Making splash!"
 	mknod /dev/fb0 c 29 0 || true
 	cat /splash > /dev/fb0 || true
+
+	resize_gpt_if_needed
 
 	[ "$quiet" != "y" ] && log_begin_msg "Running /scripts/local-premount"
 	run_scripts /scripts/local-premount
